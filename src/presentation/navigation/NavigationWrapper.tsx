@@ -1,13 +1,12 @@
-import { StyleSheet, View, Text } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import AppNavigator from "./AppNavigator";
 
 function NavigationWrapper() {
   return (
-    <View>
-      <Text>NavigationWrapper</Text>
-    </View>
+    <NavigationContainer>
+      <AppNavigator />
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({});
 
 export default NavigationWrapper;
