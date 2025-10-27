@@ -1,7 +1,7 @@
 import * as SQLite from "expo-sqlite";
 import getDatabase from "./coreStorage";
 import InsightReport from "../../domain/entities/insightReport";
-import IInsightReportRepository from "../../domain/repositories/IInsightReportRepository";
+import IInsightReportRepository from "../../domain/repositories/iInsightReportRepository";
 
 export default class InsightReportRepository
   implements IInsightReportRepository
