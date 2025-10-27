@@ -14,7 +14,7 @@
   - [x] Read (Get)
   - [x] Update
   - [x] Delete
-- [x] CRUD Operatioins of Insight Reports
+- [x] CRUD Operations of Insight Reports
   - [x] Create
   - [x] Read (Get)
   - [x] Update
