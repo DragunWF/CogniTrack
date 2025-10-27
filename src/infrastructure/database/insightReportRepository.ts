@@ -10,7 +10,7 @@ export default class InsightReportRepository
     try {
       const db = getDatabase();
       const result = await db.runAsync(
-        `INSERT INTO insight_reports (title, description, created_at) VALUES (?, ?, ?);`,
+        `INSERT INTO insightReports (title, description, createdAt) VALUES (?, ?, ?);`,
         [insight.title, insight.description, insight.createdAt.getTime()]
       );
       console.log(
@@ -28,7 +28,7 @@ export default class InsightReportRepository
     try {
       const db = getDatabase();
       const result = await db.runAsync(
-        `UPDATE insight_reports SET title = ?, description = ?, created_at = ?, notes = ? WHERE id = ?;`,
+        `UPDATE insightReports SET title = ?, description = ?, createdAt = ?, notes = ? WHERE id = ?;`,
         [
           insight.title,
           insight.description,
@@ -51,7 +51,7 @@ export default class InsightReportRepository
   async delete(id: number): Promise<void> {
     try {
       const db = getDatabase();
-      await db.runAsync(`DELETE FROM insight_reports WHERE id = ?;`, [id]);
+      await db.runAsync(`DELETE FROM insightReports WHERE id = ?;`, [id]);
       console.log("✅ Insight report deleted successfully with ID: ", id);
     } catch (err) {
       console.log("Error deleting insight report: ", err);
@@ -63,7 +63,7 @@ export default class InsightReportRepository
     try {
       const db = getDatabase();
       const results = await db.getAllAsync<InsightReport>(
-        `SELECT * FROM insight_reports;`
+        `SELECT * FROM insightReports;`
       );
       console.log("✅ Retrieved all insight reports successfully");
       return results.map((row: any) => ({
@@ -82,7 +82,7 @@ export default class InsightReportRepository
     try {
       const db = getDatabase();
       const result = await db.getFirstAsync<InsightReport>(
-        `SELECT * FROM insight_reports WHERE id = ?;`,
+        `SELECT * FROM insightReports WHERE id = ?;`,
         [id]
       );
       if (result) {
