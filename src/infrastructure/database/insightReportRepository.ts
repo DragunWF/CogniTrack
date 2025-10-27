@@ -1,22 +1,16 @@
 import * as SQLite from "expo-sqlite";
 import getDatabase from "./coreStorage";
-import InsightReport from "../../domain/interfaces/insightReport";
+import InsightReport from "../../domain/entities/insightReport";
+import IInsightReportRepository from "../../domain/repositories/IInsightReportRepository";
 
-export interface InsightReportRepository {
-  // Define methods for AI Insight repository here
-  create(insight: InsightReport): Promise<number>;
-  update(insight: InsightReport): Promise<boolean>;
-  delete(id: number): Promise<void>;
-  getAll(): Promise<InsightReport[]>;
-  getById(id: number): Promise<InsightReport | null>;
-}
-
-export class InsightReportRepository implements InsightReportRepository {
+export default class InsightReportRepository
+  implements IInsightReportRepository
+{
   async create(insight: InsightReport): Promise<number> {
     try {
       const db = getDatabase();
       const result = await db.runAsync(
-        `INSERT INTO insight_reports (title, description, createdAt) VALUES (?, ?, ?);`,
+        `INSERT INTO insight_reports (title, description, created_at) VALUES (?, ?, ?);`,
         [insight.title, insight.description, insight.createdAt.getTime()]
       );
       console.log(
@@ -34,7 +28,7 @@ export class InsightReportRepository implements InsightReportRepository {
     try {
       const db = getDatabase();
       const result = await db.runAsync(
-        `UPDATE insight_reports SET title = ?, description = ?, createdAt = ?, notes = ? WHERE id = ?;`,
+        `UPDATE insight_reports SET title = ?, description = ?, created_at = ?, notes = ? WHERE id = ?;`,
         [
           insight.title,
           insight.description,

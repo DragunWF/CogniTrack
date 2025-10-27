@@ -1,29 +1,18 @@
 import * as SQLite from "expo-sqlite";
 import getDatabase from "./coreStorage";
-import BadHabit from "../../domain/interfaces/badHabit";
+import BadHabit from "../../domain/entities/badHabit";
+import IBadHabitRepository from "../../domain/repositories/IbadHabitRepository";
 
-/*
-    This primarily concerns the CRUD operations for the bad habits table
-*/
-
-export interface BadHabitRepository {
-  create(badHabit: BadHabit): Promise<number>;
-  update(badHabit: BadHabit): Promise<boolean>;
-  delete(id: number): Promise<void>;
-  getAll(): Promise<BadHabit[]>;
-  getById(id: number): Promise<BadHabit | null>;
-}
-
-export class BadHabitRepository implements BadHabitRepository {
+export default class BadHabitRepository implements IBadHabitRepository {
   async create(badHabit: BadHabit): Promise<number> {
     try {
       const db = getDatabase();
       const result = await db.runAsync(
-        `INSERT INTO bad_habits (name, description, date_and_time, notes) VALUES (?, ?, ?, ?);`,
+        `INSERT INTO badHabits (name, description, datetime, notes) VALUES (?, ?, ?, ?);`,
         [
           badHabit.name,
           badHabit.description,
-          badHabit.date_and_time,
+          badHabit.datetime,
           badHabit.notes ? badHabit.notes : null,
         ]
       );
@@ -42,11 +31,11 @@ export class BadHabitRepository implements BadHabitRepository {
     try {
       const db = getDatabase();
       const result = await db.runAsync(
-        `UPDATE bad_habits SET name = ?, description = ?, date_and_time = ?, notes = ? WHERE id = ?;`,
+        `UPDATE badHabits SET name = ?, description = ?, datetime = ?, notes = ? WHERE id = ?;`,
         [
           badHabit.name,
           badHabit.description,
-          badHabit.date_and_time,
+          badHabit.datetime,
           badHabit.notes ? badHabit.notes : null,
           badHabit.id,
         ]
@@ -62,7 +51,7 @@ export class BadHabitRepository implements BadHabitRepository {
   async delete(id: number): Promise<void> {
     try {
       const db = getDatabase();
-      await db.runAsync(`DELETE FROM bad_habits WHERE id = ?;`, [id]);
+      await db.runAsync(`DELETE FROM badHabits WHERE id = ?;`, [id]);
       console.log("✅ Bad habit deleted successfully with ID: ", id);
     } catch (err) {
       console.log("Error deleting bad habit: ", err);
@@ -73,7 +62,9 @@ export class BadHabitRepository implements BadHabitRepository {
   async getAll(): Promise<BadHabit[]> {
     try {
       const db = getDatabase();
-      const results = await db.allAsync(`SELECT * FROM bad_habits;`);
+      const results = await db.getAllAsync<BadHabit>(
+        `SELECT * FROM badHabits;`
+      );
       return results as BadHabit[];
     } catch (err) {
       console.log("Error retrieving bad habits: ", err);
@@ -84,8 +75,8 @@ export class BadHabitRepository implements BadHabitRepository {
   async getById(id: number): Promise<BadHabit | null> {
     try {
       const db = getDatabase();
-      const results = await db.allAsync(
-        `SELECT * FROM bad_habits WHERE id = ?;`,
+      const results = await db.getAllAsync<BadHabit>(
+        `SELECT * FROM badHabits WHERE id = ?;`,
         [id]
       );
       if (results.length > 0) {

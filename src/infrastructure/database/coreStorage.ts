@@ -21,14 +21,24 @@ export async function initDatabase() {
 
     // Create tables
     await db.execAsync(`
-      CREATE TABLE IF NOT EXISTS bad_habits (
+      CREATE TABLE IF NOT EXISTS badHabits (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         description TEXT NOT NULL,
-        date_and_time INTEGER NOT NULL,
+        datetime INTEGER NOT NULL,
         notes TEXT
       );
     `);
+    await db.execAsync(`
+        CREATE TABLE IF NOT EXISTS insightReports (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        description TEXT NOT NULL,
+        createdAt INTEGER NOT NULL,
+        notes TEXT
+      );
+    `);
+
     console.log("✅ Database schema initialized successfully");
   } catch (error) {
     console.error("❌ Error initializing database:", error);
