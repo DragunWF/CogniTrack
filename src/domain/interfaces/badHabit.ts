@@ -3,5 +3,5 @@ export default interface BadHabit {
   name: string;
   description: string;
   date_and_time: number;
-  notes: string;
+  notes?: string;
 }
