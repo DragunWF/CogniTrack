@@ -2,7 +2,7 @@
 
 ## User Interface (UI) Layouts
 
-- [ ] Bad Habit Screen
+- [x] Bad Habit Screen
 - [ ] Bad Habits Overview Screen
 - [ ] Insight Reports Screen
 - [ ] Stats Screen
