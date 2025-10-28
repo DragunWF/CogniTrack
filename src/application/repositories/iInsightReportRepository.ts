@@ -1,4 +1,4 @@
-import InsightReport from "../entities/insightReport";
+import InsightReport from "../../domain/entities/insightReport";
 
 export default interface IInsightReportRepository {
   create(insightReport: InsightReport): Promise<number>;

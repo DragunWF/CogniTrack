@@ -1,4 +1,4 @@
-import BadHabit from "../entities/badHabit";
+import BadHabit from "../../domain/entities/badHabit";
 
 export default interface IBadHabitRepository {
   create(badHabit: BadHabit): Promise<number>;

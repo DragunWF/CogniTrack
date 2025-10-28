@@ -7,7 +7,7 @@ import {
   GeminiResponse,
   GeminiRequestBody,
   AIService,
-} from "../../domain/services/geminiServiceInterfaces";
+} from "../../application/services/geminiServiceInterfaces";
 
 /*
    Preferred Gemini Models:

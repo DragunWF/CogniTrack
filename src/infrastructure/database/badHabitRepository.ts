@@ -1,7 +1,7 @@
 import * as SQLite from "expo-sqlite";
 import getDatabase from "./coreStorage";
 import BadHabit from "../../domain/entities/badHabit";
-import IBadHabitRepository from "../../domain/repositories/iBadHabitRepository";
+import IBadHabitRepository from "../../application/repositories/iBadHabitRepository";
 
 export default class BadHabitRepository implements IBadHabitRepository {
   async create(badHabit: BadHabit): Promise<number> {
