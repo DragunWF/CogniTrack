@@ -1,9 +1,16 @@
+import { useState, useEffect } from "react";
 import { StyleSheet, View, Text, SafeAreaView, ScrollView } from "react-native";
+
+import BadHabit from "../../domain/entities/badHabit";
 import Title from "../components/ui/Title";
 import SectionHeader from "../components/ui/SectionHeader";
+import FloatingActionButton from "../components/ui/FloatingActionButton";
 import HabitCounter from "../components/badHabit/HabitCounter";
 import HabitLogItem from "../components/badHabit/HabitLogItem";
+import HabitModal from "../components/badHabit/HabitModal";
+
 import { mainColors } from "../../shared/constants/colors";
+import { GetAllBadHabitsUseCase } from "../../application/useCases/badHabitUseCases";
 
 /**
  * BadHabitScreen
@@ -18,6 +25,25 @@ import { mainColors } from "../../shared/constants/colors";
  */
 
 function BadHabitScreen() {
+  const [selectedHabits, setSelectedHabits] = useState<BadHabit[]>([]);
+  const [todayLog, setTodayLog] = useState<BadHabit[]>([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMode, setModalMode] = useState<"add" | "edit">("add");
+  const [editingHabit, setEditingHabit] = useState<BadHabit | undefined>(
+    undefined
+  );
+
+  useEffect(() => {
+    const fetchHabitData = async () => {
+      const getAllBadHabits = new GetAllBadHabitsUseCase();
+      const allBadHabits = await getAllBadHabits.execute();
+
+      setTodayLog(allBadHabits);
+    };
+
+    fetchHabitData();
+  }, []);
+
   // TODO: Replace with actual data from database/state management
   const mockSelectedHabits = [
     { id: 1, name: "Social Media Scrolling", count: 3 },
@@ -75,6 +101,34 @@ function BadHabitScreen() {
   const handleLogItemPress = (logId: number) => {
     // Implementation here
     console.log(`View/edit log item ${logId}`);
+  };
+
+  // TODO: Implement FAB press to open add modal
+  const handleAddHabit = () => {
+    setModalMode("add");
+    setEditingHabit(undefined);
+    setModalVisible(true);
+  };
+
+  // TODO: Implement modal close handler
+  const handleCloseModal = () => {
+    setModalVisible(false);
+    setEditingHabit(undefined);
+  };
+
+  // TODO: Implement modal submit handler
+  // This should add/update habit in database and refresh UI
+  const handleSubmitHabit = (data: {
+    id?: number;
+    name: string;
+    description: string;
+    notes?: string;
+  }) => {
+    // Implementation here
+    console.log("Submit habit:", data);
+    // If editing, update existing habit
+    // If adding, create new habit
+    // Then refresh the habit list
   };
 
   return (
@@ -145,6 +199,18 @@ function BadHabitScreen() {
         {/* Bottom spacing for comfortable scrolling */}
         <View style={styles.bottomSpacer} />
       </ScrollView>
+
+      {/* Floating Action Button */}
+      <FloatingActionButton onPress={handleAddHabit} icon="add" />
+
+      {/* Add/Edit Habit Modal */}
+      <HabitModal
+        visible={modalVisible}
+        mode={modalMode}
+        habitData={editingHabit}
+        onClose={handleCloseModal}
+        onSubmit={handleSubmitHabit}
+      />
     </SafeAreaView>
   );
 }
