@@ -1,39 +1,71 @@
-// TODO: This is a template, create a new color palette for uniqueness
-// and remember that the app should be dark theme.
+/**
+ * CogniTrack Dark Theme Color Palette
+ *
+ * Psychology-based color selection:
+ * - Deep purples/blues: Promote focus, mindfulness, and self-reflection
+ * - Teal accents: Represent balance, clarity, and positive change
+ * - Warm warnings: Gentle alerts without harsh red (reduces anxiety)
+ * - Dark backgrounds: Reduce eye strain and create a calm, introspective environment
+ */
 
 export const mainColors = {
-  // 🎨 Primary (Indigo) – Used for branding, buttons, headers
-  primary100: "#E6E4FA", // Light tint - for backgrounds or subtle highlights
-  primary300: "#9E95E9", // Soft branding backgrounds, active button states
-  primary500: "#5A4FCF", // Main branding color - primary buttons, headers
-  primary700: "#433CA6", // Hover states or dark mode emphasis
-  primary900: "#2C276E", // Deepest shade for strong text or dark mode base
+  // 🔮 Primary (Deep Purple/Blue) – Mindfulness, focus, and cognitive awareness
+  primary100: "#C8C4E6", // Lightest tint - for disabled states or very subtle highlights
+  primary300: "#8B82D9", // Soft interactive states, active tabs
+  primary500: "#6B5FCC", // Main brand color - primary buttons, active elements
+  primary700: "#4A3FA3", // Pressed states, emphasis
+  primary900: "#2D2566", // Deepest shade - text on light backgrounds
 
-  // 🌿 Accent (Soft Mint) – Used for highlights, tags, or accent borders
-  accent100: "#E6F7F6", // Background tint for cards or light accents
-  accent300: "#C6ECEA", // Subtle dividers or tag backgrounds
-  accent500: "#B2E2DF", // Main accent - used for tags, chat bubbles, etc.
-  accent700: "#85C1BD", // Hover state for accent elements
-  accent900: "#4B908B", // Used sparingly for contrast or dark mode highlights
+  // � Accent (Calm Teal) – Balance, clarity, and positive transformation
+  accent100: "#B8E6E1", // Lightest tint for highlights
+  accent300: "#7DD4CB", // Success states, positive feedback
+  accent500: "#4DBDB3", // Main accent - success indicators, progress
+  accent700: "#3A9990", // Hover states for accent elements
+  accent900: "#2A7069", // Deep accent for contrast
 
-  // 🖼️ Backgrounds
-  background: "#F5F5F5", // General light background
-  backgroundAlt: "#FFFFFF", // Card backgrounds or elevated surfaces
-  backgroundDark: "#1E1E1E", // Dark mode background base
+  // 🌑 Backgrounds (Dark, calming base)
+  background: "#0F0E17", // Deep navy-black - main app background
+  backgroundElevated: "#1A1823", // Slightly elevated surfaces (cards, modals)
+  backgroundCard: "#232135", // Card backgrounds with slight purple tint
+  backgroundInput: "#2A2838", // Input fields, interactive surfaces
 
-  // 📝 Text
-  textPrimary: "#1A1A1A", // Main readable text
-  textSecondary: "#4A4A4A", // Secondary info or descriptions
-  textMuted: "#888888", // Muted placeholder text
-  textOnPrimary: "#FFFFFF", // Text on buttons with primary color
+  // 📝 Text (Optimized for dark backgrounds)
+  textPrimary: "#FFFFFE", // Primary readable text - high contrast
+  textSecondary: "#A7A9BE", // Secondary info, less emphasis
+  textMuted: "#6E7191", // Muted text, placeholders, disabled
+  textOnPrimary: "#FFFFFF", // Text on colored buttons/surfaces
+  textOnAccent: "#0F0E17", // Text on accent colored elements
 
-  // 🧱 Border & Divider Colors
-  borderLight: "#E0E0E0", // Input borders, card dividers
-  borderDark: "#2A2A2A", // Dark mode borders
+  // 🧱 Borders & Dividers
+  border: "#2E2D3D", // Subtle borders for cards and dividers
+  borderActive: "#4A4766", // Active/focused input borders
+  borderHighlight: "#6B5FCC", // Highlighted or selected borders
+
+  // 🎯 Overlays & Shadows
+  overlay: "rgba(15, 14, 23, 0.8)", // Modal overlays
+  shadowLight: "rgba(0, 0, 0, 0.2)", // Subtle shadows
+  shadowMedium: "rgba(0, 0, 0, 0.4)", // Card shadows
+  shadowStrong: "rgba(0, 0, 0, 0.6)", // Strong elevation shadows
 };
 
 export const utilityColors = {
-  success500: "#4CAF50", // Confirmations, success feedback
-  error500: "#F44336", // Validation errors, alerts
-  warning500: "#FFC107", // Warnings or attention cues
+  // ✅ Success (Calm teal - aligned with accent)
+  success100: "#B8E6E1",
+  success500: "#4DBDB3", // Confirmations, achievements
+  success700: "#3A9990",
+
+  // ⚠️ Warning (Warm amber - less aggressive than red)
+  warning100: "#FFE4BA",
+  warning500: "#FFB84D", // Gentle warnings, caution indicators
+  warning700: "#E69A2E",
+
+  // 🚫 Error (Soft coral - serious but not harsh)
+  error100: "#FFD4CC",
+  error500: "#FF6B6B", // Validation errors, critical alerts
+  error700: "#E64E4E",
+
+  // ℹ️ Info (Soft blue - neutral information)
+  info100: "#C4D9F2",
+  info500: "#5B9FE3", // Informational messages, tips
+  info700: "#3D7FC2",
 };
