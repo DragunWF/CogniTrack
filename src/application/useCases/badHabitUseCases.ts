@@ -32,6 +32,14 @@ export class GetAllBadHabitsUseCase {
   }
 }
 
+export class GetAllTodayBadHabitsUseCase {
+  async execute(): Promise<BadHabit[]> {
+    const badHabitRepository = new BadHabitRepository();
+    const badHabitsToday = await badHabitRepository.getAllToday();
+    return badHabitsToday;
+  }
+}
+
 export class GetBadHabitByIdUseCase {
   async execute(badHabitId: number): Promise<BadHabit | null> {
     const badHabitRepository = new BadHabitRepository();

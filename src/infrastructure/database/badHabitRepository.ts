@@ -72,6 +72,25 @@ export default class BadHabitRepository implements IBadHabitRepository {
     }
   }
 
+  async getAllToday(): Promise<BadHabit[]> {
+    try {
+      const db = getDatabase();
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date();
+      endOfDay.setHours(23, 59, 59, 999);
+
+      const results = await db.getAllAsync<BadHabit>(
+        `SELECT * FROM badHabits WHERE datetime BETWEEN ? AND ?;`,
+        [startOfDay.toISOString(), endOfDay.toISOString()]
+      );
+      return results as BadHabit[];
+    } catch (err) {
+      console.log("Error retrieving today's bad habits: ", err);
+      throw err;
+    }
+  }
+
   async getById(id: number): Promise<BadHabit | null> {
     try {
       const db = getDatabase();
