@@ -47,3 +47,11 @@ export class GetBadHabitByIdUseCase {
     return badHabit;
   }
 }
+
+export class ValidatorBadHabitUseCase {
+  async executeIsUnique(name: string): Promise<boolean> {
+    const badHabitRepository = new BadHabitRepository();
+    const isUnique = await badHabitRepository.isNameUnique(name);
+    return isUnique;
+  }
+}

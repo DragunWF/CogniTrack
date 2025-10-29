@@ -13,7 +13,10 @@ import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 
 import { mainColors } from "../../../shared/constants/colors";
-import { CreateBadHabitUseCase } from "../../../application/useCases/badHabitUseCases";
+import {
+  CreateBadHabitUseCase,
+  ValidatorBadHabitUseCase,
+} from "../../../application/useCases/badHabitUseCases";
 import TextInput from "../ui/TextInput";
 import Button from "../ui/Button";
 import BadHabit from "../../../domain/entities/badHabit";
@@ -91,7 +94,7 @@ function HabitModal({
    * Returns true if all validations pass, false otherwise
    * Sets error messages for invalid fields
    */
-  const validateForm = (): boolean => {
+  const validateForm = async (): Promise<boolean> => {
     const newErrors: { name?: string; description?: string } = {};
 
     // Validate name field
@@ -99,6 +102,11 @@ function HabitModal({
       newErrors.name = "Name is required";
     } else if (name.trim().length < 3) {
       newErrors.name = "Name must be at least 3 characters";
+    }
+
+    const validator = new ValidatorBadHabitUseCase();
+    if (await validator.executeIsUnique(name)) {
+      newErrors.name = "Name must be unique";
     }
 
     // Validate description field
@@ -118,7 +126,8 @@ function HabitModal({
    * Only closes modal if submission succeeds
    */
   const handleSubmit = async () => {
-    if (validateForm()) {
+    const isValidForm = await validateForm();
+    if (isValidForm) {
       try {
         await onSubmit({
           id: habitData?.id,

@@ -6,11 +6,13 @@ import IInsightReportRepository from "../../application/repositories/iInsightRep
 export default class InsightReportRepository
   implements IInsightReportRepository
 {
+  private static tableName = "insightReports";
+
   async create(insight: InsightReport): Promise<number> {
     try {
       const db = getDatabase();
       const result = await db.runAsync(
-        `INSERT INTO insightReports (title, description, createdAt) VALUES (?, ?, ?);`,
+        `INSERT INTO ${InsightReportRepository.tableName} (title, description, createdAt) VALUES (?, ?, ?);`,
         [insight.title, insight.description, insight.createdAt.getTime()]
       );
       console.log(
@@ -28,7 +30,7 @@ export default class InsightReportRepository
     try {
       const db = getDatabase();
       const result = await db.runAsync(
-        `UPDATE insightReports SET title = ?, description = ?, createdAt = ?, notes = ? WHERE id = ?;`,
+        `UPDATE ${InsightReportRepository.tableName} SET title = ?, description = ?, createdAt = ?, notes = ? WHERE id = ?;`,
         [
           insight.title,
           insight.description,
@@ -51,7 +53,10 @@ export default class InsightReportRepository
   async delete(id: number): Promise<void> {
     try {
       const db = getDatabase();
-      await db.runAsync(`DELETE FROM insightReports WHERE id = ?;`, [id]);
+      await db.runAsync(
+        `DELETE FROM ${InsightReportRepository.tableName} WHERE id = ?;`,
+        [id]
+      );
       console.log("✅ Insight report deleted successfully with ID: ", id);
     } catch (err) {
       console.log("Error deleting insight report: ", err);
@@ -63,7 +68,7 @@ export default class InsightReportRepository
     try {
       const db = getDatabase();
       const results = await db.getAllAsync<InsightReport>(
-        `SELECT * FROM insightReports;`
+        `SELECT * FROM ${InsightReportRepository.tableName};`
       );
       console.log("✅ Retrieved all insight reports successfully");
       return results.map((row: any) => ({
@@ -82,7 +87,7 @@ export default class InsightReportRepository
     try {
       const db = getDatabase();
       const result = await db.getFirstAsync<InsightReport>(
-        `SELECT * FROM insightReports WHERE id = ?;`,
+        `SELECT * FROM ${InsightReportRepository.tableName} WHERE id = ?;`,
         [id]
       );
       if (result) {
