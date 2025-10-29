@@ -7,4 +7,5 @@ export const APP_NAVIGATION_ROUTES = {
   BAD_HABITS_OVERVIEW: "BadHabitsOverview",
   STATS: "Stats",
   INSIGHT_REPORT: "InsightReport",
+  SETTINGS: "Settings",
 };

@@ -11,6 +11,7 @@ import {
   APP_NAVIGATION_ROUTES,
 } from "../../shared/constants/navigation";
 import { mainColors } from "../../shared/constants/colors";
+import SettingsScreen from "../screens/SettingsScreen";
 
 const BottomTab = createBottomTabNavigator();
 
@@ -110,6 +111,21 @@ function AppNavigator() {
           tabBarIcon: ({ focused, color, size }) => (
             <Ionicons
               name={focused ? "bulb" : "bulb-outline"}
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <BottomTab.Screen
+        name={APP_NAVIGATION_ROUTES.SETTINGS}
+        component={SettingsScreen}
+        options={{
+          tabBarLabel: "Settings",
+          headerShown: false,
+          tabBarIcon: ({ focused, color, size }) => (
+            <Ionicons
+              name={focused ? "settings" : "settings-outline"}
               size={size}
               color={color}
             />
