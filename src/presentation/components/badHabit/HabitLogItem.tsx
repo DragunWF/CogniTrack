@@ -18,7 +18,7 @@ import { formatTime } from "../../../shared/helpers/utils";
  */
 
 interface HabitLogItemProps {
-  id: number;
+  id?: number;
   name: string;
   description: string;
   datetime: number;

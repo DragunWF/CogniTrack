@@ -1,5 +1,5 @@
 export default interface BadHabit {
-  id: number;
+  id?: number;
   name: string;
   description: string;
   datetime: number;

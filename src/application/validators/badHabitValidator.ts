@@ -1,0 +1,13 @@
+export const NAME_CONSTRAINTS = {
+  MIN_LENGTH: 2,
+  MAX_LENGTH: 100,
+};
+
+export const DESCRIPTION_CONSTRAINTS = {
+  MIN_LENGTH: 10,
+  MAX_LENGTH: 1000,
+};
+
+export const NOTES_CONSTRAINTS = {
+  MAX_LENGTH: 3000,
+};

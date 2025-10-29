@@ -31,9 +31,12 @@ function HabitCounter({
     <View style={styles.container}>
       <View style={styles.habitInfo}>
         <Text style={styles.habitName}>{name}</Text>
-        <View style={styles.visualIndicator}>
-          <Text style={styles.indicatorEmoji}>{getVisualTier(count)}</Text>
-        </View>
+        <View
+          style={[
+            styles.visualIndicator,
+            { backgroundColor: getVisualTierColor(count) },
+          ]}
+        ></View>
       </View>
 
       <View style={styles.counterSection}>
@@ -70,13 +73,20 @@ function HabitCounter({
 }
 
 /**
- * Returns a visual indicator emoji based on habit count
- * Provides immediate visual feedback on daily progress
+ * Returns a color based on habit count
+ * Uses meaningful psychology-based color progression:
+ * - Green (0): Success state - no occurrences today
+ * - Yellow (1-2): Caution - slight concern
+ * - Orange (3-5): Warning - needs attention
+ * - Red (6-9): Danger - significant issue
+ * - Dark Red (10+): Critical - severe habit pattern
  */
-function getVisualTier(count: number): string {
-  if (count === 0) return "⚪";
-  if (count <= 2) return "✖️";
-  return "🚫";
+function getVisualTierColor(count: number): string {
+  if (count <= 1) return "#22C55E"; // Green - Success
+  if (count <= 2) return "#F59E0B"; // Amber - Caution
+  if (count <= 6) return "#FB923C"; // Orange - Warning
+  if (count <= 10) return "#EF4444"; // Red - Danger
+  return "#991B1B"; // Dark Red - Critical
 }
 
 const styles = StyleSheet.create({
@@ -105,15 +115,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   visualIndicator: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: mainColors.backgroundInput,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
-  },
-  indicatorEmoji: {
-    fontSize: 18,
+    borderWidth: 2,
+    borderColor: "rgba(255, 255, 255, 0.2)",
   },
   counterSection: {
     flexDirection: "row",

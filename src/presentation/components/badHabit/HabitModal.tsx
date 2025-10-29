@@ -9,10 +9,19 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+
 import { mainColors } from "../../../shared/constants/colors";
+import { CreateBadHabitUseCase } from "../../../application/useCases/badHabitUseCases";
 import TextInput from "../ui/TextInput";
 import Button from "../ui/Button";
+import BadHabit from "../../../domain/entities/badHabit";
+import {
+  NAME_CONSTRAINTS,
+  DESCRIPTION_CONSTRAINTS,
+  NOTES_CONSTRAINTS,
+} from "../../../application/validators/badHabitValidator";
 
 /**
  * HabitModal Component
@@ -34,22 +43,18 @@ import Button from "../ui/Button";
  * @param onSubmit - Callback when form is submitted
  */
 
+// This determines the type of the habit modal's mode
+export const enum HabitModalModeEnum {
+  ADD = "add",
+  EDIT = "edit",
+}
+
 interface HabitModalProps {
   visible: boolean;
-  mode: "add" | "edit";
-  habitData?: {
-    id?: number;
-    name?: string;
-    description?: string;
-    notes?: string;
-  };
+  mode: HabitModalModeEnum;
+  habitData?: BadHabit;
   onClose: () => void;
-  onSubmit: (data: {
-    id?: number;
-    name: string;
-    description: string;
-    notes?: string;
-  }) => void;
+  onSubmit: (data: BadHabit) => Promise<void>;
 }
 
 function HabitModal({
@@ -68,7 +73,7 @@ function HabitModal({
 
   // Pre-fill form when editing
   useEffect(() => {
-    if (mode === "edit" && habitData) {
+    if (mode === HabitModalModeEnum.EDIT && habitData) {
       setName(habitData.name || "");
       setDescription(habitData.description || "");
       setNotes(habitData.notes || "");
@@ -81,29 +86,52 @@ function HabitModal({
     setErrors({});
   }, [mode, habitData, visible]);
 
-  // TODO: Implement form validation logic
+  /**
+   * Validates the form fields
+   * Returns true if all validations pass, false otherwise
+   * Sets error messages for invalid fields
+   */
   const validateForm = (): boolean => {
     const newErrors: { name?: string; description?: string } = {};
 
-    // Add validation logic here
-    // Example:
-    // if (!name.trim()) newErrors.name = "Name is required";
-    // if (!description.trim()) newErrors.description = "Description is required";
+    // Validate name field
+    if (!name.trim()) {
+      newErrors.name = "Name is required";
+    } else if (name.trim().length < 3) {
+      newErrors.name = "Name must be at least 3 characters";
+    }
+
+    // Validate description field
+    if (!description.trim()) {
+      newErrors.description = "Description is required";
+    } else if (description.trim().length < 10) {
+      newErrors.description = "Description must be at least 10 characters";
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // TODO: Implement submit handler
-  const handleSubmit = () => {
+  /**
+   * Handles form submission
+   * Validates form and calls onSubmit callback with cleaned data
+   * Only closes modal if submission succeeds
+   */
+  const handleSubmit = async () => {
     if (validateForm()) {
-      onSubmit({
-        id: habitData?.id,
-        name: name.trim(),
-        description: description.trim(),
-        notes: notes.trim() || undefined,
-      });
-      handleClose();
+      try {
+        await onSubmit({
+          id: habitData?.id,
+          name: name.trim(),
+          description: description.trim(),
+          datetime: habitData?.datetime || Date.now(),
+          notes: notes.trim() || undefined,
+        });
+        handleClose();
+      } catch (error) {
+        // Don't close modal on error - let user try again
+        console.error("Modal submission error:", error);
+      }
     }
   };
 
@@ -131,7 +159,9 @@ function HabitModal({
             {/* Header */}
             <View style={styles.header}>
               <Text style={styles.title}>
-                {mode === "add" ? "Add Bad Habit" : "Edit Bad Habit"}
+                {mode === HabitModalModeEnum.ADD
+                  ? "Add Bad Habit"
+                  : "Edit Bad Habit"}
               </Text>
               <TouchableOpacity
                 onPress={handleClose}
@@ -159,7 +189,7 @@ function HabitModal({
                   onChangeText={setName}
                   placeholder="e.g., Social Media Scrolling"
                   error={errors.name}
-                  autoFocus={mode === "add"}
+                  autoFocus={mode === HabitModalModeEnum.ADD}
                   maxLength={50}
                 />
 
@@ -197,7 +227,9 @@ function HabitModal({
                 style={styles.actionButton}
               />
               <Button
-                title={mode === "add" ? "Add Habit" : "Save Changes"}
+                title={
+                  mode === HabitModalModeEnum.ADD ? "Add Habit" : "Save Changes"
+                }
                 onPress={handleSubmit}
                 variant="primary"
                 style={styles.actionButton}

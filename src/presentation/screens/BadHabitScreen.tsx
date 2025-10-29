@@ -1,5 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { StyleSheet, View, Text, SafeAreaView, ScrollView } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
+import Toast from "react-native-toast-message";
 
 import BadHabit from "../../domain/entities/badHabit";
 import Title from "../components/ui/Title";
@@ -8,9 +10,15 @@ import FloatingActionButton from "../components/ui/FloatingActionButton";
 import HabitCounter from "../components/badHabit/HabitCounter";
 import HabitLogItem from "../components/badHabit/HabitLogItem";
 import HabitModal from "../components/badHabit/HabitModal";
+import { HabitModalModeEnum } from "../components/badHabit/HabitModal";
 
 import { mainColors } from "../../shared/constants/colors";
-import { GetAllBadHabitsUseCase } from "../../application/useCases/badHabitUseCases";
+import {
+  CreateBadHabitUseCase,
+  GetAllTodayBadHabitsUseCase,
+  UpdateBadHabitUseCase,
+  DeleteBadHabitUseCase,
+} from "../../application/useCases/badHabitUseCases";
 
 /**
  * BadHabitScreen
@@ -24,111 +32,243 @@ import { GetAllBadHabitsUseCase } from "../../application/useCases/badHabitUseCa
  * - "Today's Log" - Detailed chronological list of all logged entries
  */
 
+interface HabitCounter {
+  id: string;
+  name: string;
+  description: string;
+  count: number;
+}
+
 function BadHabitScreen() {
-  const [selectedHabits, setSelectedHabits] = useState<BadHabit[]>([]);
+  const [selectedHabits, setSelectedHabits] = useState<HabitCounter[]>([]);
   const [todayLog, setTodayLog] = useState<BadHabit[]>([]);
+
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalMode, setModalMode] = useState<"add" | "edit">("add");
+  const [modalMode, setModalMode] = useState<HabitModalModeEnum>(
+    HabitModalModeEnum.ADD
+  );
   const [editingHabit, setEditingHabit] = useState<BadHabit | undefined>(
     undefined
   );
 
-  useEffect(() => {
-    const fetchHabitData = async () => {
-      const getAllBadHabits = new GetAllBadHabitsUseCase();
-      const allBadHabits = await getAllBadHabits.execute();
+  /**
+   * Fetches all bad habits logged today and processes them for display
+   * - Updates the today's log with all entries
+   * - Calculates counts for the counter cards
+   */
+  const fetchHabitData = async () => {
+    try {
+      const getTodayBadHabits = new GetAllTodayBadHabitsUseCase();
+      const todayBadHabits = await getTodayBadHabits.execute();
 
-      setTodayLog(allBadHabits);
-    };
+      // Sort by datetime descending (most recent first)
+      const sortedLog = todayBadHabits.sort((a, b) => b.datetime - a.datetime);
+      setTodayLog(sortedLog);
 
-    fetchHabitData();
-  }, []);
-
-  // TODO: Replace with actual data from database/state management
-  const mockSelectedHabits = [
-    { id: 1, name: "Social Media Scrolling", count: 3 },
-    { id: 2, name: "Snacking", count: 1 },
-    { id: 3, name: "Procrastination", count: 0 },
-  ];
-
-  // TODO: Replace with actual data from database/state management
-  // Mock data should be in chronological order (most recent first)
-  const mockTodayLog = [
-    {
-      id: 1,
-      name: "Social Media Scrolling",
-      description: "Mindlessly scrolling through social media",
-      datetime: Date.now() - 1000 * 60 * 30, // 30 minutes ago
-      notes: "Felt stressed after work meeting",
-    },
-    {
-      id: 2,
-      name: "Social Media Scrolling",
-      description: "Mindlessly scrolling through social media",
-      datetime: Date.now() - 1000 * 60 * 90, // 1.5 hours ago
-    },
-    {
-      id: 3,
-      name: "Snacking",
-      description: "Eating unhealthy snacks between meals",
-      datetime: Date.now() - 1000 * 60 * 180, // 3 hours ago
-      notes: "Bored while watching TV",
-    },
-    {
-      id: 4,
-      name: "Social Media Scrolling",
-      description: "Mindlessly scrolling through social media",
-      datetime: Date.now() - 1000 * 60 * 240, // 4 hours ago
-    },
-  ];
-
-  // TODO: Implement increment functionality
-  // Should update the count in the database and refresh the UI
-  const handleIncrement = (habitId: number) => {
-    // Implementation here
-    console.log(`Increment habit ${habitId}`);
+      // Calculate habit counts and create counter cards
+      const habitCounts = calculateHabitCounts(todayBadHabits);
+      setSelectedHabits(habitCounts);
+    } catch (error) {
+      console.error("Error fetching habit data:", error);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Failed to load habits",
+      });
+    }
   };
 
-  // TODO: Implement decrement functionality
-  // Should update the count in the database and refresh the UI
-  const handleDecrement = (habitId: number) => {
-    // Implementation here
-    console.log(`Decrement habit ${habitId}`);
+  /**
+   * Calculates the count of each unique habit from today's log
+   * Returns an array of habit counters with name, description, and count
+   */
+  const calculateHabitCounts = (habits: BadHabit[]): HabitCounter[] => {
+    const habitMap = new Map<string, HabitCounter>();
+
+    habits.forEach((habit) => {
+      const existing = habitMap.get(habit.name);
+      if (existing) {
+        existing.count += 1;
+      } else {
+        habitMap.set(habit.name, {
+          id: habit.name, // Use name as unique identifier
+          name: habit.name,
+          description: habit.description,
+          count: 1,
+        });
+      }
+    });
+
+    // Convert to array and sort by count (descending)
+    return Array.from(habitMap.values()).sort((a, b) => b.count - a.count);
   };
 
-  // TODO: Implement log item press functionality
-  // Should navigate to detail view or open edit modal
-  const handleLogItemPress = (logId: number) => {
-    // Implementation here
-    console.log(`View/edit log item ${logId}`);
+  /**
+   * useFocusEffect hook to fetch data when screen comes into focus
+   * This ensures the data is always fresh when user navigates to this screen
+   * Also triggers on initial mount
+   */
+  useFocusEffect(
+    useCallback(() => {
+      fetchHabitData();
+    }, [])
+  );
+
+  /**
+   * Handles incrementing a habit counter
+   * Creates a new habit entry in the database with current timestamp
+   * Refreshes the UI to reflect the new count
+   */
+  const handleIncrement = async (habitId: string) => {
+    try {
+      const habit = selectedHabits.find((h) => h.id === habitId);
+      if (!habit) return;
+
+      const createBadHabit = new CreateBadHabitUseCase();
+      await createBadHabit.execute({
+        name: habit.name,
+        description: habit.description,
+        datetime: Date.now(),
+      });
+
+      // Refresh data to update counts
+      await fetchHabitData();
+    } catch (error) {
+      console.error("Error incrementing habit:", error);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Failed to log habit",
+      });
+    }
   };
 
-  // TODO: Implement FAB press to open add modal
+  /**
+   * Handles decrementing a habit counter
+   * Finds and deletes the most recent entry for this habit
+   * Prevents decrementing below 0
+   */
+  const handleDecrement = async (habitId: string) => {
+    try {
+      const habit = selectedHabits.find((h) => h.id === habitId);
+      if (!habit || habit.count === 0) return;
+
+      // Find the most recent entry for this habit
+      const habitEntries = todayLog
+        .filter((log) => log.name === habit.name)
+        .sort((a, b) => b.datetime - a.datetime);
+
+      if (habitEntries.length > 0 && habitEntries[0].id) {
+        const deleteBadHabit = new DeleteBadHabitUseCase();
+        await deleteBadHabit.execute(habitEntries[0].id);
+
+        // Refresh data to update counts
+        await fetchHabitData();
+
+        Toast.show({
+          type: "success",
+          text1: "Entry Removed",
+          text2: `${habit.name} entry deleted`,
+        });
+      }
+    } catch (error) {
+      console.error("Error decrementing habit:", error);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Failed to remove entry",
+      });
+    }
+  };
+
+  /**
+   * Opens the modal in edit mode with the selected habit's data
+   * Allows user to modify existing habit entry
+   */
+  const handleLogItemPress = (logId: number | undefined) => {
+    if (!logId) return;
+
+    const habit = todayLog.find((log) => log.id === logId);
+    if (habit) {
+      setModalMode(HabitModalModeEnum.EDIT);
+      setEditingHabit(habit);
+      setModalVisible(true);
+    }
+  };
+
+  /**
+   * Opens the modal in add mode for creating a new habit entry
+   */
   const handleAddHabit = () => {
-    setModalMode("add");
+    setModalMode(HabitModalModeEnum.ADD);
     setEditingHabit(undefined);
     setModalVisible(true);
   };
 
-  // TODO: Implement modal close handler
+  /**
+   * Closes the modal and resets the editing state
+   */
   const handleCloseModal = () => {
     setModalVisible(false);
     setEditingHabit(undefined);
   };
 
-  // TODO: Implement modal submit handler
-  // This should add/update habit in database and refresh UI
-  const handleSubmitHabit = (data: {
-    id?: number;
-    name: string;
-    description: string;
-    notes?: string;
-  }) => {
-    // Implementation here
-    console.log("Submit habit:", data);
-    // If editing, update existing habit
-    // If adding, create new habit
-    // Then refresh the habit list
+  /**
+   * Handles form submission from the modal
+   * Creates new habit or updates existing one based on mode
+   * Refreshes the UI after successful operation
+   */
+  const handleSubmitHabit = async (data: BadHabit): Promise<void> => {
+    try {
+      if (modalMode === HabitModalModeEnum.ADD) {
+        // Create new habit entry
+        const createBadHabit = new CreateBadHabitUseCase();
+        const id = await createBadHabit.execute(data);
+
+        Toast.show({
+          type: "success",
+          text1: "Habit Added",
+          text2: `${data.name} logged successfully`,
+        });
+      } else {
+        // Update existing habit entry
+        if (editingHabit?.id) {
+          const updateBadHabit = new UpdateBadHabitUseCase();
+          const isUpdated = await updateBadHabit.execute({
+            ...data,
+            id: editingHabit.id,
+          });
+
+          if (isUpdated) {
+            Toast.show({
+              type: "success",
+              text1: "Habit Updated",
+              text2: `${data.name} updated successfully`,
+            });
+          }
+        } else {
+          Toast.show({
+            type: "error",
+            text1: "Habit Update Failed",
+            text2:
+              "An unexpected error has occurred while trying to update your habit!",
+          });
+        }
+      }
+
+      // Refresh data after successful operation
+      await fetchHabitData();
+    } catch (error) {
+      console.error("Error submitting habit:", error);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: `Failed to ${
+          modalMode === HabitModalModeEnum.ADD ? "add" : "update"
+        } habit`,
+      });
+      throw error; // Re-throw so modal knows not to close on error
+    }
   };
 
   return (
@@ -149,16 +289,27 @@ function BadHabitScreen() {
             subtitle="Track your most common habits"
           />
           <View style={styles.countersGrid}>
-            {mockSelectedHabits.map((habit) => (
-              <View key={habit.id} style={styles.counterItem}>
-                <HabitCounter
-                  name={habit.name}
-                  count={habit.count}
-                  onIncrement={() => handleIncrement(habit.id)}
-                  onDecrement={() => handleDecrement(habit.id)}
-                />
+            {selectedHabits.length > 0 ? (
+              selectedHabits.map((habit) => (
+                <View key={habit.id} style={styles.counterItem}>
+                  <HabitCounter
+                    name={habit.name}
+                    count={habit.count}
+                    onIncrement={() => handleIncrement(habit.id)}
+                    onDecrement={() => handleDecrement(habit.id)}
+                  />
+                </View>
+              ))
+            ) : (
+              <View style={styles.emptyCounters}>
+                <Text style={styles.emptyCountersText}>
+                  No habits tracked yet today
+                </Text>
+                <Text style={styles.emptyCountersSubtext}>
+                  Tap the + button to log your first habit
+                </Text>
               </View>
-            ))}
+            )}
           </View>
         </View>
 
@@ -171,9 +322,9 @@ function BadHabitScreen() {
             title="Today's Log"
             subtitle="Chronological record of all entries"
           />
-          {mockTodayLog.length > 0 ? (
+          {todayLog.length > 0 ? (
             <View style={styles.logList}>
-              {mockTodayLog.map((log) => (
+              {todayLog.map((log) => (
                 <HabitLogItem
                   key={log.id}
                   id={log.id}
@@ -273,6 +424,24 @@ const styles = StyleSheet.create({
   },
   bottomSpacer: {
     height: 32,
+  },
+  emptyCounters: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 32,
+    paddingHorizontal: 16,
+  },
+  emptyCountersText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: mainColors.textSecondary,
+    marginBottom: 4,
+    textAlign: "center",
+  },
+  emptyCountersSubtext: {
+    fontSize: 12,
+    color: mainColors.textMuted,
+    textAlign: "center",
   },
 });
 

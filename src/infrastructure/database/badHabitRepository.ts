@@ -29,6 +29,10 @@ export default class BadHabitRepository implements IBadHabitRepository {
 
   async update(badHabit: BadHabit): Promise<boolean> {
     try {
+      if (!badHabit.id) {
+        throw new Error("Bad habit ID is required for update");
+      }
+
       const db = getDatabase();
       const result = await db.runAsync(
         `UPDATE badHabits SET name = ?, description = ?, datetime = ?, notes = ? WHERE id = ?;`,
@@ -82,7 +86,7 @@ export default class BadHabitRepository implements IBadHabitRepository {
 
       const results = await db.getAllAsync<BadHabit>(
         `SELECT * FROM badHabits WHERE datetime BETWEEN ? AND ?;`,
-        [startOfDay.toISOString(), endOfDay.toISOString()]
+        [startOfDay.getTime(), endOfDay.getTime()]
       );
       return results as BadHabit[];
     } catch (err) {
