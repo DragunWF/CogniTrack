@@ -3,9 +3,10 @@
 ## User Interface (UI) Layouts
 
 - [x] Bad Habit Screen
-- [ ] Bad Habits Overview Screen
+- [x] Bad Habits Overview Screen
 - [ ] Insight Reports Screen
 - [ ] Stats Screen
+- [ ] Settings Screen
 
 ## Functionality
 
@@ -24,3 +25,4 @@
   - [ ] Pie Chart for Bad Habits
   - [ ] Vertical Bar Graph for Bad Habits
   - [ ] Filter options
+- [ ] Import and export of app data as JSON
