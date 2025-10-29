@@ -19,6 +19,26 @@ function TrendsCard({ data, timeRange, loading = false }: TrendsCardProps) {
 
   const hasData = data.length > 0 && data.some((d) => d.value > 0);
 
+  // Limit data points for better readability
+  const getLimitedData = (): TrendDataPoint[] => {
+    switch (timeRange) {
+      case "This Month":
+        // Show last 7 days
+        return data.slice(-7);
+      case "This Year":
+        // Show last 6 months
+        return data.slice(-6);
+      case "All Time":
+        // Show last 12 months/years
+        return data.slice(-6);
+      default:
+        // Today and This Week show all data
+        return data;
+    }
+  };
+
+  const displayData = getLimitedData();
+
   // Get appropriate axis label based on time range
   const getXAxisLabel = (): string => {
     switch (timeRange) {
@@ -27,11 +47,11 @@ function TrendsCard({ data, timeRange, loading = false }: TrendsCardProps) {
       case "This Week":
         return "Day of Week";
       case "This Month":
-        return "Date";
+        return "Last 14 Days";
       case "This Year":
-        return "Month";
+        return "Last 6 Months";
       case "All Time":
-        return "Month";
+        return "Last 12 Periods";
       default:
         return "";
     }
@@ -51,10 +71,10 @@ function TrendsCard({ data, timeRange, loading = false }: TrendsCardProps) {
           <View style={styles.chartWrapper}>
             <BarChart
               data={{
-                labels: data.map((d) => d.label),
+                labels: displayData.map((d) => d.label),
                 datasets: [
                   {
-                    data: data.map((d) => d.value),
+                    data: displayData.map((d) => d.value),
                   },
                 ],
               }}
