@@ -150,4 +150,54 @@ export default class BadHabitRepository implements IBadHabitRepository {
       throw err;
     }
   }
+
+  async getByDate(date: string): Promise<BadHabit[]> {
+    try {
+      const db = getDatabase();
+      const targetDate = new Date(date);
+      const startOfDay = new Date(targetDate.setHours(0, 0, 0, 0));
+      const endOfDay = new Date(targetDate.setHours(23, 59, 59, 999));
+
+      const results = await db.getAllAsync<BadHabit>(
+        `SELECT * FROM ${BadHabitRepository.tableName} WHERE datetime BETWEEN ? AND ?;`,
+        [startOfDay.getTime(), endOfDay.getTime()]
+      );
+      return results as BadHabit[];
+    } catch (err) {
+      console.log("Error retrieving bad habits by date: ", err);
+      throw err;
+    }
+  }
+
+  async getByName(name: string): Promise<BadHabit[]> {
+    try {
+      const db = getDatabase();
+      const results = await db.getAllAsync<BadHabit>(
+        `SELECT * FROM ${BadHabitRepository.tableName} WHERE name = ?;`,
+        [name]
+      );
+      return results as BadHabit[];
+    } catch (err) {
+      console.log("Error retrieving bad habits by name: ", err);
+      throw err;
+    }
+  }
+
+  async getByDateAndName(date: string, name: string): Promise<BadHabit[]> {
+    try {
+      const db = getDatabase();
+      const targetDate = new Date(date);
+      const startOfDay = new Date(targetDate.setHours(0, 0, 0, 0));
+      const endOfDay = new Date(targetDate.setHours(23, 59, 59, 999));
+
+      const results = await db.getAllAsync<BadHabit>(
+        `SELECT * FROM ${BadHabitRepository.tableName} WHERE datetime BETWEEN ? AND ? AND name = ?;`,
+        [startOfDay.getTime(), endOfDay.getTime(), name]
+      );
+      return results as BadHabit[];
+    } catch (err) {
+      console.log("Error retrieving bad habits by date and name: ", err);
+      throw err;
+    }
+  }
 }
