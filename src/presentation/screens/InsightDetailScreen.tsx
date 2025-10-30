@@ -18,7 +18,6 @@ import {
   GetInsightReportByIdUseCase,
   UpdateInsightNotesUseCase,
 } from "../../application/useCases/insightReportUseCases";
-import ConfirmationModal from "../components/common/ConfirmationModal";
 
 /**
  * InsightDetailScreen - Detailed view of a single insight report
