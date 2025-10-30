@@ -197,8 +197,8 @@ export class GetTrendDataUseCase {
           key = date.getHours().toString().padStart(2, "0");
           break;
         case "This Week":
-          // Group by day of week (S, M, T, W, T, F, S)
-          const days = ["S", "M", "T", "W", "T", "F", "S"];
+          // Group by day of week (Sun, Mon, Tue, Wed, Thu, Fri, Sat)
+          const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
           key = days[date.getDay()];
           break;
         case "This Month":
@@ -243,7 +243,7 @@ export class GetTrendDataUseCase {
         }
         break;
       case "This Week":
-        const days = ["S", "M", "T", "W", "T", "F", "S"];
+        const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
         days.forEach((day) => {
           trendData.push({ label: day, value: trendMap.get(day) || 0 });
         });

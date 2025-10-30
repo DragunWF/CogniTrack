@@ -22,6 +22,9 @@ function TrendsCard({ data, timeRange, loading = false }: TrendsCardProps) {
   // Limit data points for better readability
   const getLimitedData = (): TrendDataPoint[] => {
     switch (timeRange) {
+      case "This Week":
+        // Show all 7 days of the current week (Sunday to Saturday)
+        return data;
       case "This Month":
         // Show last 7 days
         return data.slice(-7);
@@ -32,7 +35,7 @@ function TrendsCard({ data, timeRange, loading = false }: TrendsCardProps) {
         // Show last 12 months/years
         return data.slice(-6);
       default:
-        // Today and This Week show all data
+        // Today shows all data
         return data;
     }
   };
@@ -45,7 +48,7 @@ function TrendsCard({ data, timeRange, loading = false }: TrendsCardProps) {
       case "Today":
         return "Hour of Day";
       case "This Week":
-        return "Day of Week";
+        return "Current Week (Sun-Sat)";
       case "This Month":
         return "Last 14 Days";
       case "This Year":
