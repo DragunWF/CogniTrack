@@ -6,4 +6,6 @@ export default interface IInsightReportRepository {
   delete(id: number): Promise<void>;
   getAll(): Promise<InsightReport[]>;
   getById(id: number): Promise<InsightReport | null>;
+  getByDateRange(startDate: Date, endDate: Date): Promise<InsightReport[]>;
+  updateNotes(id: number, notes: string): Promise<void>;
 }

@@ -39,3 +39,21 @@ export class GetInsightReportByIdUseCase {
     return insight;
   }
 }
+
+export class GetInsightReportsByDateRangeUseCase {
+  async execute(startDate: Date, endDate: Date): Promise<InsightReport[]> {
+    const insightReportRepository = new InsightReportRepository();
+    const insights = await insightReportRepository.getByDateRange(
+      startDate,
+      endDate
+    );
+    return insights;
+  }
+}
+
+export class UpdateInsightNotesUseCase {
+  async execute(insightId: number, notes: string): Promise<void> {
+    const insightReportRepository = new InsightReportRepository();
+    await insightReportRepository.updateNotes(insightId, notes);
+  }
+}

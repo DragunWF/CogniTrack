@@ -44,7 +44,7 @@ export async function initDatabase() {
         CREATE TABLE IF NOT EXISTS ${TABLE_NAMES.insightReports} (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
-        description TEXT NOT NULL,
+        content TEXT NOT NULL,
         createdAt INTEGER NOT NULL,
         notes TEXT
       );

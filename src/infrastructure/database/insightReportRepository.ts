@@ -102,7 +102,7 @@ export default class InsightReportRepository
   async getById(id: number): Promise<InsightReport | null> {
     try {
       const db = getDatabase();
-      const result = await db.getFirstAsync<InsightReport>(
+      const result = await db.getFirstAsync<any>(
         `SELECT * FROM ${InsightReportRepository.tableName} WHERE ${InsightReportRepository.id} = ?;`,
         [id]
       );
@@ -113,6 +113,7 @@ export default class InsightReportRepository
           title: result.title,
           content: result.content,
           createdAt: new Date(result.createdAt),
+          notes: result.notes ?? undefined,
         };
       } else {
         console.log("⚠️ No insight report found with ID: ", id);
@@ -120,6 +121,54 @@ export default class InsightReportRepository
       }
     } catch (err) {
       console.log("Error retrieving insight report: ", err);
+      throw err;
+    }
+  }
+
+  async getByDateRange(
+    startDate: Date,
+    endDate: Date
+  ): Promise<InsightReport[]> {
+    try {
+      const db = getDatabase();
+      const startTimestamp = startDate.getTime();
+      const endTimestamp = endDate.getTime();
+
+      const results = await db.getAllAsync<any>(
+        `SELECT * FROM ${InsightReportRepository.tableName} 
+         WHERE ${InsightReportRepository.createdAt} BETWEEN ? AND ?
+         ORDER BY ${InsightReportRepository.createdAt} DESC;`,
+        [startTimestamp, endTimestamp]
+      );
+
+      console.log(
+        `✅ Retrieved ${results.length} insight reports for date range`
+      );
+      return results.map((row) => ({
+        id: row.id,
+        title: row.title,
+        content: row.content,
+        createdAt: new Date(row.createdAt),
+        notes: row.notes ?? undefined,
+      }));
+    } catch (err) {
+      console.log("Error retrieving insight reports by date range: ", err);
+      throw err;
+    }
+  }
+
+  async updateNotes(id: number, notes: string): Promise<void> {
+    try {
+      const db = getDatabase();
+      await db.runAsync(
+        `UPDATE ${InsightReportRepository.tableName} 
+         SET ${InsightReportRepository.notes} = ? 
+         WHERE ${InsightReportRepository.id} = ?;`,
+        [notes, id]
+      );
+      console.log("✅ Notes updated successfully for report ID: ", id);
+    } catch (err) {
+      console.log("Error updating notes: ", err);
       throw err;
     }
   }
