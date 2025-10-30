@@ -35,7 +35,7 @@ import {
 interface HabitCounter {
   id: string;
   name: string;
-  description: string;
+  description?: string;
   count: number;
 }
 
@@ -331,6 +331,7 @@ function BadHabitScreen() {
                   name={log.name}
                   description={log.description}
                   datetime={log.datetime}
+                  location={log.location}
                   notes={log.notes}
                   onPress={() => handleLogItemPress(log.id)}
                 />

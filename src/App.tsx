@@ -4,7 +4,10 @@ import { ActivityIndicator, View } from "react-native";
 import Toast from "react-native-toast-message";
 
 import NavigationWrapper from "./presentation/navigation/NavigationWrapper";
-import { initDatabase } from "./infrastructure/database/coreStorage";
+import {
+  initDatabase,
+  resetDatabase,
+} from "./infrastructure/database/coreStorage";
 
 export default function App() {
   const [isDbInitialized, setIsDbInitialized] = useState(false);
@@ -13,6 +16,10 @@ export default function App() {
     const initializeDb = async () => {
       try {
         // Initializes the database once the app loads
+
+        // Uncomment this when you want to reset the database during development
+        // await resetDatabase();
+
         await initDatabase();
         setIsDbInitialized(true);
         console.log("✅ Database initialized in App.tsx");

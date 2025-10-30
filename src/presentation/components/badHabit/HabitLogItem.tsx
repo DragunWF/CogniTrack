@@ -20,8 +20,9 @@ import { formatTime } from "../../../shared/helpers/utils";
 interface HabitLogItemProps {
   id?: number;
   name: string;
-  description: string;
+  description?: string;
   datetime: number;
+  location?: string;
   notes?: string;
   onPress?: () => void;
 }
@@ -31,6 +32,7 @@ function HabitLogItem({
   name,
   description,
   datetime,
+  location,
   notes,
   onPress,
 }: HabitLogItemProps) {
@@ -49,7 +51,13 @@ function HabitLogItem({
 
       <View style={styles.contentSection}>
         <Text style={styles.habitName}>{name}</Text>
-        <Text style={styles.description}>{description}</Text>
+        {description && <Text style={styles.description}>{description}</Text>}
+        {location && (
+          <View style={styles.locationContainer}>
+            <Text style={styles.locationIcon}>📍</Text>
+            <Text style={styles.locationText}>{location}</Text>
+          </View>
+        )}
         {notes && (
           <View style={styles.notesContainer}>
             <Text style={styles.notesLabel}>Note:</Text>
@@ -103,6 +111,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: mainColors.textSecondary,
     lineHeight: 20,
+    marginBottom: 4,
+  },
+  locationContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    marginTop: 4,
+  },
+  locationIcon: {
+    fontSize: 12,
+  },
+  locationText: {
+    fontSize: 13,
+    color: mainColors.textSecondary,
+    fontWeight: "500",
   },
   notesContainer: {
     marginTop: 8,

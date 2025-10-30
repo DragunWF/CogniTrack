@@ -24,6 +24,7 @@ import {
   NAME_CONSTRAINTS,
   DESCRIPTION_CONSTRAINTS,
   NOTES_CONSTRAINTS,
+  LOCATION_CONSTRAINTS,
 } from "../../../application/validators/badHabitValidator";
 
 /**
@@ -69,21 +70,26 @@ function HabitModal({
 }: HabitModalProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [location, setLocation] = useState("");
   const [notes, setNotes] = useState("");
-  const [errors, setErrors] = useState<{ name?: string; description?: string }>(
-    {}
-  );
+  const [errors, setErrors] = useState<{
+    name?: string;
+    description?: string;
+    location?: string;
+  }>({});
 
   // Pre-fill form when editing
   useEffect(() => {
     if (mode === HabitModalModeEnum.EDIT && habitData) {
       setName(habitData.name || "");
       setDescription(habitData.description || "");
+      setLocation(habitData.location || "");
       setNotes(habitData.notes || "");
     } else {
       // Reset form when switching to add mode
       setName("");
       setDescription("");
+      setLocation("");
       setNotes("");
     }
     setErrors({});
@@ -100,20 +106,13 @@ function HabitModal({
     // Validate name field
     if (!name.trim()) {
       newErrors.name = "Name is required";
-    } else if (name.trim().length < 3) {
-      newErrors.name = "Name must be at least 3 characters";
+    } else if (name.trim().length < NAME_CONSTRAINTS.MIN_LENGTH) {
+      newErrors.name = `Name must be at least ${NAME_CONSTRAINTS.MIN_LENGTH} characters`;
     }
 
     const validator = new ValidatorBadHabitUseCase();
-    if (await validator.executeIsUnique(name)) {
+    if (!(await validator.executeIsUnique(name))) {
       newErrors.name = "Name must be unique";
-    }
-
-    // Validate description field
-    if (!description.trim()) {
-      newErrors.description = "Description is required";
-    } else if (description.trim().length < 10) {
-      newErrors.description = "Description must be at least 10 characters";
     }
 
     setErrors(newErrors);
@@ -133,6 +132,7 @@ function HabitModal({
           id: habitData?.id,
           name: name.trim(),
           description: description.trim(),
+          location: location.trim() || undefined,
           datetime: habitData?.datetime || Date.now(),
           notes: notes.trim() || undefined,
         });
@@ -147,6 +147,7 @@ function HabitModal({
   const handleClose = () => {
     setName("");
     setDescription("");
+    setLocation("");
     setNotes("");
     setErrors({});
     onClose();
@@ -199,18 +200,28 @@ function HabitModal({
                   placeholder="e.g., Social Media Scrolling"
                   error={errors.name}
                   autoFocus={mode === HabitModalModeEnum.ADD}
-                  maxLength={50}
+                  maxLength={NAME_CONSTRAINTS.MAX_LENGTH}
                 />
 
                 <TextInput
-                  label="Description *"
+                  label="Description (Optional)"
                   value={description}
                   onChangeText={setDescription}
                   placeholder="Describe this habit..."
                   error={errors.description}
                   multiline
                   numberOfLines={3}
-                  maxLength={200}
+                  maxLength={DESCRIPTION_CONSTRAINTS.MAX_LENGTH}
+                />
+
+                <TextInput
+                  label="Location (Optional)"
+                  value={location}
+                  onChangeText={setLocation}
+                  placeholder="e.g., Living Room"
+                  error={errors.location}
+                  autoFocus={mode === HabitModalModeEnum.ADD}
+                  maxLength={LOCATION_CONSTRAINTS.MAX_LENGTH}
                 />
 
                 <TextInput
@@ -220,7 +231,7 @@ function HabitModal({
                   placeholder="Any additional context or triggers..."
                   multiline
                   numberOfLines={4}
-                  maxLength={500}
+                  maxLength={NOTES_CONSTRAINTS.MAX_LENGTH}
                 />
 
                 <Text style={styles.helperText}>* Required fields</Text>

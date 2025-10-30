@@ -1,7 +1,8 @@
 export default interface BadHabit {
-  id?: number;
+  id?: number; // Auto-incremented ID
   name: string;
-  description: string;
   datetime: number;
+  description?: string;
+  location?: string;
   notes?: string;
 }

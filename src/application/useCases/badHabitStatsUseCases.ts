@@ -153,7 +153,7 @@ export class GetBreakdownDataUseCase {
           key = (habit as any).trigger || "Unknown"; // Using type assertion as trigger may not be in BadHabit yet
           break;
         case "location":
-          key = (habit as any).location || "Unknown"; // Using type assertion as location may not be in BadHabit yet
+          key = habit.location || "Unknown";
           break;
       }
       itemMap.set(key, (itemMap.get(key) || 0) + 1);

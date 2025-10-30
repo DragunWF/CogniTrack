@@ -6,14 +6,25 @@ import IInsightReportRepository from "../../application/repositories/iInsightRep
 export default class InsightReportRepository
   implements IInsightReportRepository
 {
-  private static tableName = "insightReports";
+  public static tableName = "insightReports";
+
+  // Column names
+  public static id = "id";
+  public static title = "title";
+  public static content = "content";
+  public static createdAt = "createdAt";
+  public static notes = "notes";
 
   async create(insight: InsightReport): Promise<number> {
     try {
       const db = getDatabase();
       const result = await db.runAsync(
-        `INSERT INTO ${InsightReportRepository.tableName} (title, description, createdAt) VALUES (?, ?, ?);`,
-        [insight.title, insight.description, insight.createdAt.getTime()]
+        `INSERT INTO ${InsightReportRepository.tableName} (
+          ${InsightReportRepository.title}, 
+          ${InsightReportRepository.content}, 
+          ${InsightReportRepository.createdAt}
+        ) VALUES (?, ?, ?);`,
+        [insight.title, insight.content, insight.createdAt.getTime()]
       );
       console.log(
         "✅ Insight report created successfully with ID: ",
@@ -30,10 +41,15 @@ export default class InsightReportRepository
     try {
       const db = getDatabase();
       const result = await db.runAsync(
-        `UPDATE ${InsightReportRepository.tableName} SET title = ?, description = ?, createdAt = ?, notes = ? WHERE id = ?;`,
+        `UPDATE ${InsightReportRepository.tableName} 
+         SET ${InsightReportRepository.title} = ?, 
+             ${InsightReportRepository.content} = ?, 
+             ${InsightReportRepository.createdAt} = ?, 
+             ${InsightReportRepository.notes} = ? 
+         WHERE ${InsightReportRepository.id} = ?;`,
         [
           insight.title,
-          insight.description,
+          insight.content,
           insight.createdAt.getTime(),
           insight.notes ? insight.notes : null,
           insight.id,
@@ -74,7 +90,7 @@ export default class InsightReportRepository
       return results.map((row: any) => ({
         id: row.id,
         title: row.title,
-        description: row.description,
+        content: row.content,
         createdAt: new Date(row.createdAt),
       }));
     } catch (err) {
@@ -87,7 +103,7 @@ export default class InsightReportRepository
     try {
       const db = getDatabase();
       const result = await db.getFirstAsync<InsightReport>(
-        `SELECT * FROM ${InsightReportRepository.tableName} WHERE id = ?;`,
+        `SELECT * FROM ${InsightReportRepository.tableName} WHERE ${InsightReportRepository.id} = ?;`,
         [id]
       );
       if (result) {
@@ -95,7 +111,7 @@ export default class InsightReportRepository
         return {
           id: result.id,
           title: result.title,
-          description: result.description,
+          content: result.content,
           createdAt: new Date(result.createdAt),
         };
       } else {

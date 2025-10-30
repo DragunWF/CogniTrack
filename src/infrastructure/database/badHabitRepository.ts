@@ -4,7 +4,15 @@ import BadHabit from "../../domain/entities/badHabit";
 import IBadHabitRepository from "../../application/repositories/iBadHabitRepository";
 
 export default class BadHabitRepository implements IBadHabitRepository {
-  private static tableName = "badHabits";
+  public static tableName = "badHabits";
+
+  // Column names
+  public static id = "id";
+  public static name = "name";
+  public static description = "description";
+  public static datetime = "datetime";
+  public static location = "location";
+  public static notes = "notes";
 
   async create(badHabit: BadHabit): Promise<number> {
     try {
@@ -13,12 +21,20 @@ export default class BadHabitRepository implements IBadHabitRepository {
       const randomId = await this.generateRandomId();
       badHabit.id = randomId;
       const result = await db.runAsync(
-        `INSERT INTO ${BadHabitRepository.tableName} (id, name, description, datetime, notes) VALUES (?, ?, ?, ?, ?);`,
+        `INSERT INTO ${BadHabitRepository.tableName} (
+          ${BadHabitRepository.id}, 
+          ${BadHabitRepository.name}, 
+          ${BadHabitRepository.description}, 
+          ${BadHabitRepository.datetime}, 
+          ${BadHabitRepository.location},
+          ${BadHabitRepository.notes}
+        ) VALUES (?, ?, ?, ?, ?, ?);`,
         [
           badHabit.id,
           badHabit.name,
-          badHabit.description,
+          badHabit.description ? badHabit.description : null,
           badHabit.datetime,
+          badHabit.location ? badHabit.location : null,
           badHabit.notes ? badHabit.notes : null,
         ]
       );
@@ -42,11 +58,12 @@ export default class BadHabitRepository implements IBadHabitRepository {
 
       const db = getDatabase();
       const result = await db.runAsync(
-        `UPDATE ${BadHabitRepository.tableName} SET name = ?, description = ?, datetime = ?, notes = ? WHERE id = ?;`,
+        `UPDATE ${BadHabitRepository.tableName} SET name = ?, description = ?, datetime = ?, location = ?, notes = ? WHERE id = ?;`,
         [
           badHabit.name,
-          badHabit.description,
+          badHabit.description ? badHabit.description : null,
           badHabit.datetime,
+          badHabit.location ? badHabit.location : null,
           badHabit.notes ? badHabit.notes : null,
           badHabit.id,
         ]

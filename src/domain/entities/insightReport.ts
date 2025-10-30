@@ -1,7 +1,7 @@
 export default interface InsightReport {
-  id: number;
+  id: number; // Auto-incremented ID
   title: string;
-  description: string;
+  content: string;
   createdAt: Date;
   notes?: string;
 }
