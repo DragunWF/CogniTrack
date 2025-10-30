@@ -25,6 +25,7 @@ import {
   DESCRIPTION_CONSTRAINTS,
   NOTES_CONSTRAINTS,
   LOCATION_CONSTRAINTS,
+  TRIGGER_CONSTRAINTS,
 } from "../../../application/validators/badHabitValidator";
 
 /**
@@ -71,11 +72,13 @@ function HabitModal({
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
+  const [trigger, setTrigger] = useState("");
   const [notes, setNotes] = useState("");
   const [errors, setErrors] = useState<{
     name?: string;
     description?: string;
     location?: string;
+    trigger?: string;
   }>({});
 
   // Pre-fill form when editing
@@ -84,12 +87,14 @@ function HabitModal({
       setName(habitData.name || "");
       setDescription(habitData.description || "");
       setLocation(habitData.location || "");
+      setTrigger(habitData.trigger || "");
       setNotes(habitData.notes || "");
     } else {
       // Reset form when switching to add mode
       setName("");
       setDescription("");
       setLocation("");
+      setTrigger("");
       setNotes("");
     }
     setErrors({});
@@ -131,8 +136,9 @@ function HabitModal({
         await onSubmit({
           id: habitData?.id,
           name: name.trim(),
-          description: description.trim(),
+          description: description.trim() || undefined,
           location: location.trim() || undefined,
+          trigger: trigger.trim() || undefined,
           datetime: habitData?.datetime || Date.now(),
           notes: notes.trim() || undefined,
         });
@@ -148,6 +154,7 @@ function HabitModal({
     setName("");
     setDescription("");
     setLocation("");
+    setTrigger("");
     setNotes("");
     setErrors({});
     onClose();
@@ -222,6 +229,16 @@ function HabitModal({
                   error={errors.location}
                   autoFocus={mode === HabitModalModeEnum.ADD}
                   maxLength={LOCATION_CONSTRAINTS.MAX_LENGTH}
+                />
+
+                <TextInput
+                  label="Trigger (Optional)"
+                  value={trigger}
+                  onChangeText={setTrigger}
+                  placeholder="e.g., Stress, Boredom"
+                  error={errors.trigger}
+                  autoFocus={mode === HabitModalModeEnum.ADD}
+                  maxLength={TRIGGER_CONSTRAINTS.MAX_LENGTH}
                 />
 
                 <TextInput

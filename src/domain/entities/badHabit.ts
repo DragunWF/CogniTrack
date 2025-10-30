@@ -4,5 +4,6 @@ export default interface BadHabit {
   datetime: number;
   description?: string;
   location?: string;
+  trigger?: string;
   notes?: string;
 }

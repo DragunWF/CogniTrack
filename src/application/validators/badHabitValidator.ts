@@ -14,3 +14,7 @@ export const LOCATION_CONSTRAINTS = {
 export const NOTES_CONSTRAINTS = {
   MAX_LENGTH: 3000,
 };
+
+export const TRIGGER_CONSTRAINTS = {
+  MAX_LENGTH: 100,
+};

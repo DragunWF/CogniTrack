@@ -259,7 +259,7 @@ function BadHabitScreen() {
       // Refresh data after successful operation
       await fetchHabitData();
     } catch (error) {
-      console.error("Error submitting habit:", error);
+      console.error("BadHabitScreen: Error submitting habit:", error);
       Toast.show({
         type: "error",
         text1: "Error",
@@ -332,6 +332,7 @@ function BadHabitScreen() {
                   description={log.description}
                   datetime={log.datetime}
                   location={log.location}
+                  trigger={log.trigger}
                   notes={log.notes}
                   onPress={() => handleLogItemPress(log.id)}
                 />

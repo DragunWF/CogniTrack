@@ -12,6 +12,7 @@ export default class BadHabitRepository implements IBadHabitRepository {
   public static description = "description";
   public static datetime = "datetime";
   public static location = "location";
+  public static trigger = "trigger";
   public static notes = "notes";
 
   async create(badHabit: BadHabit): Promise<number> {
@@ -20,6 +21,7 @@ export default class BadHabitRepository implements IBadHabitRepository {
 
       const randomId = await this.generateRandomId();
       badHabit.id = randomId;
+
       const result = await db.runAsync(
         `INSERT INTO ${BadHabitRepository.tableName} (
           ${BadHabitRepository.id}, 
@@ -27,14 +29,16 @@ export default class BadHabitRepository implements IBadHabitRepository {
           ${BadHabitRepository.description}, 
           ${BadHabitRepository.datetime}, 
           ${BadHabitRepository.location},
+          ${BadHabitRepository.trigger},
           ${BadHabitRepository.notes}
-        ) VALUES (?, ?, ?, ?, ?, ?);`,
+        ) VALUES (?, ?, ?, ?, ?, ?, ?);`,
         [
           badHabit.id,
           badHabit.name,
           badHabit.description ? badHabit.description : null,
           badHabit.datetime,
           badHabit.location ? badHabit.location : null,
+          badHabit.trigger ? badHabit.trigger : null,
           badHabit.notes ? badHabit.notes : null,
         ]
       );
@@ -58,12 +62,20 @@ export default class BadHabitRepository implements IBadHabitRepository {
 
       const db = getDatabase();
       const result = await db.runAsync(
-        `UPDATE ${BadHabitRepository.tableName} SET name = ?, description = ?, datetime = ?, location = ?, notes = ? WHERE id = ?;`,
+        `UPDATE ${BadHabitRepository.tableName} 
+         SET ${BadHabitRepository.name} = ?, 
+             ${BadHabitRepository.description} = ?, 
+             ${BadHabitRepository.datetime} = ?, 
+             ${BadHabitRepository.location} = ?, 
+             ${BadHabitRepository.trigger} = ?, 
+             ${BadHabitRepository.notes} = ? 
+         WHERE id = ?;`,
         [
           badHabit.name,
           badHabit.description ? badHabit.description : null,
           badHabit.datetime,
           badHabit.location ? badHabit.location : null,
+          badHabit.trigger ? badHabit.trigger : null,
           badHabit.notes ? badHabit.notes : null,
           badHabit.id,
         ]
@@ -80,7 +92,7 @@ export default class BadHabitRepository implements IBadHabitRepository {
     try {
       const db = getDatabase();
       await db.runAsync(
-        `DELETE FROM ${BadHabitRepository.tableName} WHERE id = ?;`,
+        `DELETE FROM ${BadHabitRepository.tableName} WHERE ${BadHabitRepository.id} = ?;`,
         [id]
       );
       console.log("✅ Bad habit deleted successfully with ID: ", id);
@@ -94,7 +106,7 @@ export default class BadHabitRepository implements IBadHabitRepository {
     try {
       const db = getDatabase();
       const results = await db.getAllAsync<BadHabit>(
-        `SELECT * FROM badHabits;`
+        `SELECT * FROM ${BadHabitRepository.tableName};`
       );
       return results as BadHabit[];
     } catch (err) {
@@ -112,7 +124,7 @@ export default class BadHabitRepository implements IBadHabitRepository {
       endOfDay.setHours(23, 59, 59, 999);
 
       const results = await db.getAllAsync<BadHabit>(
-        `SELECT * FROM ${BadHabitRepository.tableName} WHERE datetime BETWEEN ? AND ?;`,
+        `SELECT * FROM ${BadHabitRepository.tableName} WHERE ${BadHabitRepository.datetime} BETWEEN ? AND ?;`,
         [startOfDay.getTime(), endOfDay.getTime()]
       );
       return results as BadHabit[];
@@ -126,7 +138,7 @@ export default class BadHabitRepository implements IBadHabitRepository {
     try {
       const db = getDatabase();
       const results = await db.getAllAsync<BadHabit>(
-        `SELECT * FROM badHabits WHERE id = ?;`,
+        `SELECT * FROM ${BadHabitRepository.tableName} WHERE ${BadHabitRepository.id} = ?;`,
         [id]
       );
       if (results.length > 0) {
@@ -142,10 +154,10 @@ export default class BadHabitRepository implements IBadHabitRepository {
 
   // Utility method to generate a random ID
   async generateRandomId(): Promise<number> {
-    const randomId = Math.floor(Math.random() * 1000000);
+    const randomId = Math.floor(Math.random() * 99999999) + 1;
     const db = getDatabase();
     const existing = await db.getAllAsync<BadHabit>(
-      `SELECT * FROM badHabits WHERE id = ?;`,
+      `SELECT * FROM ${BadHabitRepository.tableName} WHERE ${BadHabitRepository.id} = ?;`,
       [randomId]
     );
     if (existing.length > 0) {
@@ -158,7 +170,7 @@ export default class BadHabitRepository implements IBadHabitRepository {
     try {
       const db = getDatabase();
       const results = await db.getAllAsync<BadHabit>(
-        `SELECT * FROM ${BadHabitRepository.tableName} WHERE name = ?;`,
+        `SELECT * FROM ${BadHabitRepository.tableName} WHERE ${BadHabitRepository.name} = ?;`,
         [name]
       );
       return results.length === 0;
@@ -176,7 +188,8 @@ export default class BadHabitRepository implements IBadHabitRepository {
       const endOfDay = new Date(targetDate.setHours(23, 59, 59, 999));
 
       const results = await db.getAllAsync<BadHabit>(
-        `SELECT * FROM ${BadHabitRepository.tableName} WHERE datetime BETWEEN ? AND ?;`,
+        `SELECT * FROM ${BadHabitRepository.tableName}
+         WHERE ${BadHabitRepository.datetime} BETWEEN ? AND ?;`,
         [startOfDay.getTime(), endOfDay.getTime()]
       );
       return results as BadHabit[];
@@ -190,7 +203,8 @@ export default class BadHabitRepository implements IBadHabitRepository {
     try {
       const db = getDatabase();
       const results = await db.getAllAsync<BadHabit>(
-        `SELECT * FROM ${BadHabitRepository.tableName} WHERE name = ?;`,
+        `SELECT * FROM ${BadHabitRepository.tableName} 
+         WHERE ${BadHabitRepository.name} = ?;`,
         [name]
       );
       return results as BadHabit[];
@@ -208,7 +222,8 @@ export default class BadHabitRepository implements IBadHabitRepository {
       const endOfDay = new Date(targetDate.setHours(23, 59, 59, 999));
 
       const results = await db.getAllAsync<BadHabit>(
-        `SELECT * FROM ${BadHabitRepository.tableName} WHERE datetime BETWEEN ? AND ? AND name = ?;`,
+        `SELECT * FROM ${BadHabitRepository.tableName} 
+         WHERE ${BadHabitRepository.datetime} BETWEEN ? AND ? AND ${BadHabitRepository.name} = ?;`,
         [startOfDay.getTime(), endOfDay.getTime(), name]
       );
       return results as BadHabit[];

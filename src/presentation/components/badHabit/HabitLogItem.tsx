@@ -23,6 +23,7 @@ interface HabitLogItemProps {
   description?: string;
   datetime: number;
   location?: string;
+  trigger?: string;
   notes?: string;
   onPress?: () => void;
 }
@@ -33,6 +34,7 @@ function HabitLogItem({
   description,
   datetime,
   location,
+  trigger,
   notes,
   onPress,
 }: HabitLogItemProps) {
@@ -56,6 +58,12 @@ function HabitLogItem({
           <View style={styles.locationContainer}>
             <Text style={styles.locationIcon}>📍</Text>
             <Text style={styles.locationText}>{location}</Text>
+          </View>
+        )}
+        {trigger && (
+          <View style={styles.triggerContainer}>
+            <Text style={styles.triggerIcon}>⚡</Text>
+            <Text style={styles.triggerText}>{trigger}</Text>
           </View>
         )}
         {notes && (
@@ -123,6 +131,20 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   locationText: {
+    fontSize: 13,
+    color: mainColors.textSecondary,
+    fontWeight: "500",
+  },
+  triggerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    marginTop: 4,
+  },
+  triggerIcon: {
+    fontSize: 12,
+  },
+  triggerText: {
     fontSize: 13,
     color: mainColors.textSecondary,
     fontWeight: "500",

@@ -150,16 +150,14 @@ export class GetBreakdownDataUseCase {
           key = habit.name;
           break;
         case "trigger":
-          key = (habit as any).trigger || "Unknown"; // Using type assertion as trigger may not be in BadHabit yet
+          key = habit.trigger || "Unknown";
           break;
         case "location":
           key = habit.location || "Unknown";
           break;
       }
       itemMap.set(key, (itemMap.get(key) || 0) + 1);
-    });
-
-    // Convert to array and calculate percentages
+    }); // Convert to array and calculate percentages
     const breakdown: BreakdownItem[] = [];
     itemMap.forEach((value, label) => {
       breakdown.push({

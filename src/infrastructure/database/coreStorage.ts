@@ -36,6 +36,7 @@ export async function initDatabase() {
         description TEXT,
         datetime INTEGER NOT NULL,
         location TEXT,
+        trigger TEXT,
         notes TEXT
       );
     `);
