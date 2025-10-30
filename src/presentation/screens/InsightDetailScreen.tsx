@@ -178,45 +178,6 @@ function InsightDetailScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
-
-      {/* Success Modal */}
-      <ConfirmationModal
-        visible={showSuccessModal}
-        title="Success"
-        message="Your notes have been saved successfully!"
-        icon="✅"
-        confirmText="OK"
-        cancelText=""
-        onConfirm={() => setShowSuccessModal(false)}
-        onCancel={() => setShowSuccessModal(false)}
-        confirmColor={utilityColors.success500}
-      />
-
-      {/* Error Modal */}
-      <ConfirmationModal
-        visible={showErrorModal}
-        title="Error"
-        message={errorMessage}
-        icon="⚠️"
-        confirmText="OK"
-        cancelText=""
-        onConfirm={() => setShowErrorModal(false)}
-        onCancel={() => setShowErrorModal(false)}
-        confirmColor={mainColors.primary500}
-      />
-
-      {/* Report Not Found Modal */}
-      <ConfirmationModal
-        visible={showNotFoundModal}
-        title="Report Not Found"
-        message="The insight report you're looking for could not be found."
-        icon="❌"
-        confirmText="Go Back"
-        cancelText=""
-        onConfirm={handleNotFoundConfirm}
-        onCancel={handleNotFoundConfirm}
-        confirmColor={mainColors.primary500}
-      />
     </SafeAreaView>
   );
 }
