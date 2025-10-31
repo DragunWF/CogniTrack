@@ -4,8 +4,8 @@
 
 - [x] Bad Habit Screen
 - [x] Bad Habits Overview Screen
-- [ ] Insight Reports Screen
-- [ ] Stats Screen
+- [x] Insight Reports Screen
+- [x] Stats Screen
 - [ ] Settings Screen
 
 ## Functionality
@@ -20,9 +20,9 @@
   - [x] Read (Get)
   - [x] Update
   - [x] Delete
-- [ ] AI Insight Generation
-- [ ] Chart Conversion
-  - [ ] Pie Chart for Bad Habits
-  - [ ] Vertical Bar Graph for Bad Habits
-  - [ ] Filter options
+- [x] AI Insight Generation
+- [x] Chart Conversion
+  - [x] Pie Chart for Bad Habits
+  - [x] Vertical Bar Graph for Bad Habits
+  - [x] Filter options
 - [ ] Import and export of app data as JSON
