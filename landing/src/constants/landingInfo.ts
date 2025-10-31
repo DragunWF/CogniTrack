@@ -1,6 +1,6 @@
 // UPDATE THIS WHEN THERE IS A NEW EXPO DEVELOPMENT BUILD AVAILABLE
 const EXPO_APP_URL =
-  "https://expo.dev/preview/update?message=refactor%3A+replace+logo+on+both+the+landing+page+and+the+mobile+app&updateRuntimeVersion=1.0.0&createdAt=2025-10-31T11%3A52%3A19.924Z&slug=exp&projectId=9203ba2d-9630-4ea0-88b5-9d813e63dee5&group=6129ad88-fb65-4189-80cf-431a2d79f713";
+  "https://expo.dev/preview/update?message=refactor%28app%29%3A+deprecate+habit+name+uniqueness&updateRuntimeVersion=1.0.0&createdAt=2025-10-31T14%3A26%3A29.159Z&slug=exp&projectId=9203ba2d-9630-4ea0-88b5-9d813e63dee5&group=df97d6c9-9a52-41cc-86a7-27ecb76f0bd5";
 
 // TypeScript interfaces for landing page data
 export interface CTAButton {
