@@ -1,6 +1,7 @@
 # AI Insight Generation Implementation
 
 ## Overview
+
 This document describes the complete implementation of the AI-powered insight generation feature for the CogniTrack app. The feature analyzes user's bad habit data over a 30-day period and generates personalized insights using Google's Gemini API.
 
 ## Architecture Overview
@@ -43,12 +44,14 @@ The implementation strictly follows **Robert C. Martin's Clean Architecture** pr
 ## Features Implemented
 
 ### 1. **AI Insight Generation**
+
 - **Date Range Selection**: User selects an end date, system analyzes 30 days prior
 - **Data Fetching**: Retrieves all bad habits from the specified date range
 - **AI Analysis**: Sends data to Gemini API with structured prompt
 - **Report Creation**: Saves generated insights to database with markdown content
 
 ### 2. **Insight Report List Screen**
+
 - **Filter Options**: This Month, This Year, All Time
 - **Report Cards**: Display title and creation date
 - **FAB Button**: Floating action button to generate new insights
@@ -56,6 +59,7 @@ The implementation strictly follows **Robert C. Martin's Clean Architecture** pr
 - **Error Handling**: Displays error modal if generation fails
 
 ### 3. **Insight Detail Screen**
+
 - **Markdown Rendering**: Custom dark theme styles for AI-generated content
 - **Notes Section**: Editable text area for user annotations
 - **Save Functionality**: Persists notes to database
@@ -66,17 +70,19 @@ The implementation strictly follows **Robert C. Martin's Clean Architecture** pr
 ### Infrastructure Layer
 
 #### `insightGenerator.ts` (NEW)
+
 **Purpose**: Handles AI communication and response parsing
 **Location**: `/src/infrastructure/ai/insightGenerator.ts`
 
 ```typescript
 class InsightGenerator {
-  generateInsights(badHabits, startDate, endDate): Promise<{title, content}>
-  parseAIResponse(response): {title, content}
+  generateInsights(badHabits, startDate, endDate): Promise<{ title; content }>;
+  parseAIResponse(response): { title; content };
 }
 ```
 
 **Key Features**:
+
 - Transforms bad habit data to match prompt format
 - Calls Gemini API via GeminiService
 - Parses JSON response with error handling
@@ -84,13 +90,16 @@ class InsightGenerator {
 - Returns fallback content if parsing fails
 
 #### `badHabitRepository.ts` (ENHANCED)
+
 **Purpose**: Database operations for bad habits
 **Location**: `/src/infrastructure/database/badHabitRepository.ts`
 
 **New Method**:
+
 ```typescript
 async getByDateRange(startDate: Date, endDate: Date): Promise<BadHabit[]>
 ```
+
 - Converts dates to Unix timestamps
 - Queries database with BETWEEN clause
 - Orders results by datetime DESC
@@ -98,16 +107,18 @@ async getByDateRange(startDate: Date, endDate: Date): Promise<BadHabit[]>
 ### Application Layer
 
 #### `generateInsightUseCase.ts` (NEW)
+
 **Purpose**: Orchestrates the insight generation process
 **Location**: `/src/application/useCases/generateInsightUseCase.ts`
 
 ```typescript
 class GenerateInsightUseCase {
-  execute(startDate, endDate): Promise<{title, content}>
+  execute(startDate, endDate): Promise<{ title; content }>;
 }
 ```
 
 **Flow**:
+
 1. Fetch bad habits within date range
 2. Check if data exists (returns "No Data" content if empty)
 3. Call InsightGenerator for AI analysis
@@ -116,10 +127,12 @@ class GenerateInsightUseCase {
 ### Presentation Layer
 
 #### `InsightReportScreen.tsx` (UPDATED)
+
 **Purpose**: List view and generation trigger
 **Location**: `/src/presentation/screens/InsightReportScreen.tsx`
 
 **Key Changes**:
+
 - Removed mock data generation
 - Integrated `GenerateInsightUseCase`
 - Added proper error handling with `ErrorModal`
@@ -127,6 +140,7 @@ class GenerateInsightUseCase {
 - Removed unnecessary delays
 
 **User Flow**:
+
 ```
 1. User taps FAB (+)
 2. Date picker modal appears
@@ -139,10 +153,12 @@ class GenerateInsightUseCase {
 ```
 
 #### `InsightDetailScreen.tsx` (UPDATED)
+
 **Purpose**: Display AI insights and manage user notes
 **Location**: `/src/presentation/screens/InsightDetailScreen.tsx`
 
 **Key Changes**:
+
 - Added `ErrorModal` and `SuccessModal` imports
 - Enhanced error handling (report not found)
 - Auto-navigate back after 2s if report missing
@@ -150,46 +166,53 @@ class GenerateInsightUseCase {
 - Improved modal user experience
 
 **Features**:
+
 - **Header**: Title + creation date
 - **Content Card**: Markdown-rendered AI insights with custom dark theme
 - **Notes Section**: Multi-line text input with save button
 - **Modals**: Success confirmation and error alerts
 
 #### `ErrorModal.tsx` (NEW)
+
 **Purpose**: Reusable error display component
 **Location**: `/src/presentation/components/common/ErrorModal.tsx`
 
 **Props**:
+
 ```typescript
 interface ErrorModalProps {
   visible: boolean;
-  title?: string;        // Default: "Error"
+  title?: string; // Default: "Error"
   message: string;
   onDismiss: () => void;
 }
 ```
 
 **Features**:
+
 - ⚠️ Warning icon
 - Dark theme card styling
 - Single dismiss button
 - Backdrop tap to close
 
 #### `SuccessModal.tsx` (NEW)
+
 **Purpose**: Reusable success message component
 **Location**: `/src/presentation/components/common/SuccessModal.tsx`
 
 **Props**:
+
 ```typescript
 interface SuccessModalProps {
   visible: boolean;
-  title?: string;        // Default: "Success"
+  title?: string; // Default: "Success"
   message: string;
   onDismiss: () => void;
 }
 ```
 
 **Features**:
+
 - ✅ Checkmark icon
 - Dark theme card styling
 - Single dismiss button
@@ -334,10 +357,11 @@ const markdownStyles = {
   code_block: { backgroundColor: backgroundInput, padding: 12 },
   link: { color: accent500, textDecorationLine: "underline" },
   // ... bullet lists, ordered lists, horizontal rules
-}
+};
 ```
 
 **Supported Elements**:
+
 - Headings (H1, H2, H3)
 - Paragraphs with proper spacing
 - Bold and italic text
@@ -351,6 +375,7 @@ const markdownStyles = {
 The prompt (`prompts.ts`) is designed following the **Atomic Habits framework**:
 
 **Input Format**:
+
 ```json
 [
   {
@@ -364,6 +389,7 @@ The prompt (`prompts.ts`) is designed following the **Atomic Habits framework**:
 ```
 
 **Output Format** (enforced):
+
 ```json
 {
   "title": "Pattern: Afternoon Procrastination",
@@ -372,6 +398,7 @@ The prompt (`prompts.ts`) is designed following the **Atomic Habits framework**:
 ```
 
 **Analysis Focus**:
+
 1. **Summary**: 1-2 sentence overview of patterns
 2. **Key Insights** (bullets):
    - Strongest trigger-habit connections
@@ -387,16 +414,19 @@ The prompt (`prompts.ts`) is designed following the **Atomic Habits framework**:
 ## Error Handling
 
 ### Generation Errors
+
 - **Network failure**: Error modal with "check internet connection" message
 - **API error**: Caught and logged, user sees error modal
 - **Parse error**: Fallback content returned with "Unable to Generate Insights"
 
 ### Data Errors
+
 - **No habits found**: Returns structured "No Data Available" content
 - **Report not found**: Error modal + auto-navigate back after 2s
 - **Save notes failure**: Error modal with retry option
 
 ### User Feedback
+
 - **Loading states**: Spinner with "Generating Insights..." message
 - **Success states**: Success modal with checkmark
 - **Error states**: Error modal with warning icon
@@ -404,13 +434,16 @@ The prompt (`prompts.ts`) is designed following the **Atomic Habits framework**:
 ## Testing Considerations
 
 ### Unit Tests (Suggested)
+
 1. **InsightGenerator**:
+
    - Test JSON parsing with valid response
    - Test parsing with markdown code blocks
    - Test fallback on parse errors
    - Test data transformation
 
 2. **GenerateInsightUseCase**:
+
    - Test with empty habit array
    - Test with valid habit data
    - Test error propagation
@@ -421,12 +454,14 @@ The prompt (`prompts.ts`) is designed following the **Atomic Habits framework**:
    - Test ordering
 
 ### Integration Tests (Suggested)
+
 1. Full generation flow from FAB tap to navigation
 2. Notes save and retrieve flow
 3. Error modal display and dismissal
 4. Filter switching and data refresh
 
 ### E2E Tests (Suggested)
+
 1. Generate report with real API (if test key available)
 2. Navigate between list and detail screens
 3. Edit and save notes
@@ -435,9 +470,11 @@ The prompt (`prompts.ts`) is designed following the **Atomic Habits framework**:
 ## Dependencies
 
 ### New Dependencies
+
 - None (uses existing packages)
 
 ### Existing Dependencies Used
+
 - `react-native-markdown-display` - Markdown rendering
 - `axios` - HTTP requests (via GeminiService)
 - `expo-sqlite` - Database operations
@@ -453,23 +490,27 @@ EXPO_PUBLIC_GEMINI_API_KEY=your_api_key_here
 ## Clean Architecture Compliance
 
 ### ✅ Dependency Rule
+
 - **Outer layers depend on inner layers only**
 - Presentation → Application → Domain → Infrastructure ❌ (correct)
 - Infrastructure has NO dependencies on Presentation ✅
 
 ### ✅ Separation of Concerns
+
 - **Use Cases**: Pure business logic, no UI
 - **Repositories**: Database operations only
 - **Services**: External API communication only
 - **Screens**: UI logic, user interaction only
 
 ### ✅ Testability
+
 - Each layer can be tested independently
 - Use cases don't depend on React Native
 - Repositories can use mock databases
 - Services can be mocked for testing
 
 ### ✅ Single Responsibility
+
 - InsightGenerator: AI communication only
 - GenerateInsightUseCase: Orchestration only
 - BadHabitRepository: Database queries only
@@ -478,6 +519,7 @@ EXPO_PUBLIC_GEMINI_API_KEY=your_api_key_here
 ## Future Enhancements
 
 ### Potential Features
+
 1. **Export Reports**: PDF/markdown export functionality
 2. **Share Insights**: Share via social media or messaging
 3. **Report History**: Timeline view of all generated reports
@@ -486,12 +528,14 @@ EXPO_PUBLIC_GEMINI_API_KEY=your_api_key_here
 6. **Compare Periods**: Side-by-side comparison of different time ranges
 
 ### Performance Optimizations
+
 1. **Caching**: Cache recent reports to reduce API calls
 2. **Pagination**: Load reports in batches for large datasets
 3. **Background Generation**: Generate reports in background task
 4. **Optimistic UI**: Show "generating" state immediately
 
 ### UX Improvements
+
 1. **Loading Progress**: Show percentage or steps during generation
 2. **Sample Reports**: Provide examples for new users
 3. **Tooltips**: Explain what insights mean and how to act on them
@@ -500,20 +544,24 @@ EXPO_PUBLIC_GEMINI_API_KEY=your_api_key_here
 ## Troubleshooting
 
 ### "Failed to generate insight report"
+
 - **Check**: Internet connection
 - **Check**: EXPO_PUBLIC_GEMINI_API_KEY is set correctly
 - **Check**: API key has not exceeded quota
 - **Solution**: Retry generation or check Gemini API status
 
 ### "No Data Available"
+
 - **Cause**: No bad habits logged in the selected period
 - **Solution**: Log some habits or select a different date range
 
 ### "Report not found"
+
 - **Cause**: Report was deleted or database corrupted
 - **Solution**: Screen auto-navigates back after 2 seconds
 
 ### Markdown not rendering correctly
+
 - **Check**: Content field contains valid markdown
 - **Check**: react-native-markdown-display package installed
 - **Solution**: Verify markdown syntax in database
