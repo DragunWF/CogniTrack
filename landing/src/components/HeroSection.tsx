@@ -24,7 +24,11 @@ export const HeroSection = () => {
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           >
             <div className={styles.logo}>
-              <span className={styles.logoText}>CT</span>
+              <img
+                src="/icon.png"
+                alt="CogniTrack Logo"
+                className={styles.logoImage}
+              />
             </div>
           </motion.div>
 

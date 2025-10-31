@@ -136,9 +136,10 @@ export const landingInfo: LandingInfo = {
       link: "#features",
       variant: "secondary",
     },
-    // NOTE: Replace with your actual Expo deep link after publishing
-    expoDeepLink: "exp://exp.host/@DragunWF/cognitrack",
-    directLink: "https://expo.dev/@DragunWF/cognitrack",
+    expoDeepLink:
+      "https://expo.dev/preview/update?message=feat%28landing%29%3A+MAJOR+CHANGE+IMPLEMENT+MAIN+LANDING+PAGE&updateRuntimeVersion=1.0.0&createdAt=2025-10-31T09%3A57%3A51.072Z&slug=exp&projectId=9203ba2d-9630-4ea0-88b5-9d813e63dee5&group=a2b1a4bc-500a-4aca-a4b5-2b618da38d0c",
+    directLink:
+      "https://expo.dev/preview/update?message=feat%28landing%29%3A+MAJOR+CHANGE+IMPLEMENT+MAIN+LANDING+PAGE&updateRuntimeVersion=1.0.0&createdAt=2025-10-31T09%3A57%3A51.072Z&slug=exp&projectId=9203ba2d-9630-4ea0-88b5-9d813e63dee5&group=a2b1a4bc-500a-4aca-a4b5-2b618da38d0c",
     githubLink: "https://github.com/DragunWF/CogniTrack",
     expoGoIOSLink: "https://apps.apple.com/app/expo-go/id982107779",
     expoGoAndroidLink:
@@ -202,7 +203,7 @@ export const landingInfo: LandingInfo = {
         icon: "🧠",
         title: "AI-Powered Insights",
         description:
-          "Google Gemini 2.0 analyzes your data to reveal time-based patterns, emotional triggers, and hidden connections you'd never spot manually.",
+          "Google Gemini 2.5 analyzes your data to reveal time-based patterns, emotional triggers, and hidden connections you'd never spot manually.",
         highlight: "accent",
       },
       {
@@ -251,7 +252,7 @@ export const landingInfo: LandingInfo = {
         number: 2,
         title: "AI Analyzes Patterns",
         description:
-          "Google Gemini 2.0 Flash processes your habit data to find patterns you'd never notice — time correlations, triggers, and trends.",
+          "Google Gemini 2.5 Flash processes your habit data to find patterns you'd never notice — time correlations, triggers, and trends.",
         icon: "🤖",
       },
       {
@@ -273,7 +274,7 @@ export const landingInfo: LandingInfo = {
 
   aiShowcase: {
     title: "Intelligence That Understands You",
-    badge: "Powered by Google Gemini 2.0 Flash",
+    badge: "Powered by Google Gemini 2.5 Flash",
     description:
       "CogniTrack doesn't just store data — it thinks about it. Our AI analyzes your habit patterns to surface insights you'd never find on your own.",
     capabilities: [
@@ -367,8 +368,8 @@ export const landingInfo: LandingInfo = {
         url: "https://github.com/DragunWF/CogniTrack",
       },
       {
-        title: "View on Expo",
-        url: "https://expo.dev/@DragunWF/cognitrack",
+        title: "View Developer's LinkedIn",
+        url: "https://www.linkedin.com/in/marc-plarisan/",
       },
     ],
   },

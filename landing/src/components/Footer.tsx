@@ -13,7 +13,11 @@ export const Footer = () => {
         <div className={styles.content}>
           <div className={styles.about}>
             <div className={styles.logo}>
-              <span className={styles.logoText}>CT</span>
+              <img
+                src="/icon.png"
+                alt="CogniTrack Logo"
+                className={styles.logoImage}
+              />
             </div>
             <p className={styles.tagline}>{footer.tagline}</p>
             <p className={styles.description}>
@@ -48,7 +52,7 @@ export const Footer = () => {
           <div className={styles.social}>
             <h4 className={styles.linksTitle}>Connect</h4>
             <p className={styles.socialText}>
-              Built with ❤️ and mindfulness by{" "}
+              Built with 🌟 and mindfulness by{" "}
               <a
                 href="https://github.com/DragunWF"
                 target="_blank"
