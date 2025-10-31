@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/react";
 import { HeroSection } from "./components/HeroSection";
 import { ProblemStatement } from "./components/ProblemStatement";
 import { CoreConcept } from "./components/CoreConcept";
@@ -21,6 +22,7 @@ function App() {
       <TechStack />
       <AccessSection />
       <Footer />
+      <Analytics />
     </div>
   );
 }
