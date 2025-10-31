@@ -26,6 +26,17 @@
     "web": {
       "favicon": "./assets/icon.png"
     },
-    "plugins": ["expo-sqlite"]
+    "plugins": [
+      "expo-sqlite"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "9203ba2d-9630-4ea0-88b5-9d813e63dee5"
+      }
+    },
+    "runtimeVersion": "1.0.0",
+    "updates": {
+      "url": "https://u.expo.dev/9203ba2d-9630-4ea0-88b5-9d813e63dee5"
+    }
   }
 }
