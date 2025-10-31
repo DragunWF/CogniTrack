@@ -131,6 +131,7 @@
   background: var(--color-primary-300);
   transform: scale(1.02);
   box-shadow: 0 4px 12px rgba(107, 95, 204, 0.5);
+  color: var(--color-text-primary);
 }
 
 .directLink:active {
