@@ -159,7 +159,7 @@ export const landingInfo: LandingInfo = {
           "You repeat behaviors without realizing how often they actually happen",
       },
       {
-        icon: "🌫️",
+        icon: "🔍",
         title: "Hidden Patterns",
         description:
           "You don't see the patterns — the times, triggers, and emotions behind your habits",
