@@ -50,6 +50,7 @@ export class GetBadHabitByIdUseCase {
 
 export class ValidatorBadHabitUseCase {
   async executeIsUnique(name: string): Promise<boolean> {
+    // DEPRECATED: Uniqueness should not be a constraint for bad habits
     const badHabitRepository = new BadHabitRepository();
     const isUnique = await badHabitRepository.isNameUnique(name);
     return isUnique;

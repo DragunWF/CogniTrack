@@ -115,11 +115,6 @@ function HabitModal({
       newErrors.name = `Name must be at least ${NAME_CONSTRAINTS.MIN_LENGTH} characters`;
     }
 
-    const validator = new ValidatorBadHabitUseCase();
-    if (!(await validator.executeIsUnique(name))) {
-      newErrors.name = "Name must be unique";
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
