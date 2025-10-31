@@ -259,4 +259,55 @@ export default class BadHabitRepository implements IBadHabitRepository {
       throw err;
     }
   }
+
+  /**
+   * Delete all bad habits from the database
+   * Used for clearing all data or importing backups
+   */
+  async deleteAll(): Promise<void> {
+    try {
+      const db = getDatabase();
+      await db.runAsync(`DELETE FROM ${BadHabitRepository.tableName};`);
+      console.log("✅ All bad habits deleted successfully");
+    } catch (err) {
+      console.log("Error deleting all bad habits: ", err);
+      throw err;
+    }
+  }
+
+  /**
+   * Bulk insert bad habits (used for import operations)
+   * @param habits - Array of bad habits to insert
+   */
+  async bulkInsert(habits: BadHabit[]): Promise<void> {
+    try {
+      const db = getDatabase();
+      for (const habit of habits) {
+        await db.runAsync(
+          `INSERT INTO ${BadHabitRepository.tableName} (
+            ${BadHabitRepository.id},
+            ${BadHabitRepository.name},
+            ${BadHabitRepository.description},
+            ${BadHabitRepository.datetime},
+            ${BadHabitRepository.location},
+            ${BadHabitRepository.trigger},
+            ${BadHabitRepository.notes}
+          ) VALUES (?, ?, ?, ?, ?, ?, ?);`,
+          [
+            habit.id || null,
+            habit.name,
+            habit.description || null,
+            habit.datetime,
+            habit.location || null,
+            habit.trigger || null,
+            habit.notes || null,
+          ]
+        );
+      }
+      console.log(`✅ Bulk inserted ${habits.length} bad habits`);
+    } catch (err) {
+      console.log("Error bulk inserting bad habits: ", err);
+      throw err;
+    }
+  }
 }

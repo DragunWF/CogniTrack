@@ -15,7 +15,7 @@ export interface DailyHabitCount {
 export interface HabitTypeAggregate {
   name: string;
   count: number;
-  description: string;
+  description?: string;
   lastOccurrence: number;
 }
 

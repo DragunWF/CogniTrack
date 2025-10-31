@@ -36,16 +36,15 @@ export interface BackupData {
  * Retrieves all data from the database and formats it as a JSON-serializable object
  */
 export class ExportAllDataUseCase {
-  constructor(
-    private badHabitRepository: BadHabitRepository,
-    private insightReportRepository: InsightReportRepository
-  ) {}
-
   async execute(): Promise<BackupData> {
     try {
+      // Instantiate repositories (use case layer responsibility)
+      const badHabitRepository = new BadHabitRepository();
+      const insightReportRepository = new InsightReportRepository();
+
       // Fetch all data from repositories
-      const badHabits = await this.badHabitRepository.getAll();
-      const insightReports = await this.insightReportRepository.getAll();
+      const badHabits = await badHabitRepository.getAll();
+      const insightReports = await insightReportRepository.getAll();
 
       // Convert InsightReport dates to ISO strings for JSON serialization
       const serializedReports = insightReports.map((report) => ({
@@ -84,70 +83,30 @@ export class ExportAllDataUseCase {
  * Uses a database transaction to ensure atomicity
  */
 export class ImportFromBackupUseCase {
-  constructor(
-    private badHabitRepository: BadHabitRepository,
-    private insightReportRepository: InsightReportRepository
-  ) {}
-
   async execute(backupData: BackupData): Promise<void> {
     try {
       // Validate backup data structure
       this.validateBackupData(backupData);
 
+      // Instantiate repositories
+      const badHabitRepository = new BadHabitRepository();
+      const insightReportRepository = new InsightReportRepository();
+
       const db = getDatabase();
 
       // Execute import in a transaction for atomicity
       await db.withTransactionAsync(async () => {
-        // Step 1: Clear all existing data
-        await db.runAsync(`DELETE FROM ${BadHabitRepository.tableName};`);
-        await db.runAsync(`DELETE FROM ${InsightReportRepository.tableName};`);
+        // Step 1: Clear all existing data using repository methods
+        await badHabitRepository.deleteAll();
+        await insightReportRepository.deleteAll();
         console.log("🗑️ Cleared existing data");
 
-        // Step 2: Import bad habits
-        for (const habit of backupData.badHabits) {
-          await db.runAsync(
-            `INSERT INTO ${BadHabitRepository.tableName} (
-              ${BadHabitRepository.id},
-              ${BadHabitRepository.name},
-              ${BadHabitRepository.description},
-              ${BadHabitRepository.datetime},
-              ${BadHabitRepository.location},
-              ${BadHabitRepository.trigger},
-              ${BadHabitRepository.notes}
-            ) VALUES (?, ?, ?, ?, ?, ?, ?);`,
-            [
-              habit.id || null,
-              habit.name,
-              habit.description || null,
-              habit.datetime,
-              habit.location || null,
-              habit.trigger || null,
-              habit.notes || null,
-            ]
-          );
-        }
+        // Step 2: Import bad habits using repository method
+        await badHabitRepository.bulkInsert(backupData.badHabits);
         console.log(`✅ Imported ${backupData.badHabits.length} bad habits`);
 
-        // Step 3: Import insight reports
-        for (const report of backupData.insightReports) {
-          const createdAtTimestamp = new Date(report.createdAt).getTime();
-          await db.runAsync(
-            `INSERT INTO ${InsightReportRepository.tableName} (
-              ${InsightReportRepository.id},
-              ${InsightReportRepository.title},
-              ${InsightReportRepository.content},
-              ${InsightReportRepository.createdAt},
-              ${InsightReportRepository.notes}
-            ) VALUES (?, ?, ?, ?, ?);`,
-            [
-              report.id,
-              report.title,
-              report.content,
-              createdAtTimestamp,
-              report.notes || null,
-            ]
-          );
-        }
+        // Step 3: Import insight reports using repository method
+        await insightReportRepository.bulkInsert(backupData.insightReports);
         console.log(
           `✅ Imported ${backupData.insightReports.length} insight reports`
         );
@@ -218,12 +177,10 @@ export class ImportFromBackupUseCase {
  * Deletes all habit logs from the database
  */
 export class ClearAllBadHabitsUseCase {
-  constructor(private badHabitRepository: BadHabitRepository) {}
-
   async execute(): Promise<void> {
     try {
-      const db = getDatabase();
-      await db.runAsync(`DELETE FROM ${BadHabitRepository.tableName};`);
+      const badHabitRepository = new BadHabitRepository();
+      await badHabitRepository.deleteAll();
       console.log("✅ All bad habits cleared successfully");
     } catch (error) {
       console.error("❌ Error clearing bad habits:", error);
@@ -238,12 +195,10 @@ export class ClearAllBadHabitsUseCase {
  * Deletes all AI-generated insight reports from the database
  */
 export class ClearAllInsightReportsUseCase {
-  constructor(private insightReportRepository: InsightReportRepository) {}
-
   async execute(): Promise<void> {
     try {
-      const db = getDatabase();
-      await db.runAsync(`DELETE FROM ${InsightReportRepository.tableName};`);
+      const insightReportRepository = new InsightReportRepository();
+      await insightReportRepository.deleteAll();
       console.log("✅ All insight reports cleared successfully");
     } catch (error) {
       console.error("❌ Error clearing insight reports:", error);

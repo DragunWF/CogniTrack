@@ -16,8 +16,6 @@ import SettingsSection from "../components/settings/SettingsSection";
 import SettingsButton from "../components/settings/SettingsButton";
 import ConfirmationModal from "../components/settings/ConfirmationModal";
 import LoadingModal from "../components/settings/LoadingModal";
-import SuccessModal from "../components/common/SuccessModal";
-import ErrorModal from "../components/common/ErrorModal";
 
 // Use cases
 import {
@@ -27,10 +25,6 @@ import {
   ClearAllInsightReportsUseCase,
   BackupData,
 } from "../../application/useCases/dataManagementUseCases";
-
-// Repositories
-import BadHabitRepository from "../../infrastructure/database/badHabitRepository";
-import InsightReportRepository from "../../infrastructure/database/insightReportRepository";
 
 /**
  * Settings Screen
@@ -52,23 +46,11 @@ function SettingsScreen() {
   const [showClearHabitsConfirm, setShowClearHabitsConfirm] = useState(false);
   const [showClearInsightsConfirm, setShowClearInsightsConfirm] =
     useState(false);
-  const [successModal, setSuccessModal] = useState<{
-    visible: boolean;
-    message: string;
-  }>({ visible: false, message: "" });
-  const [errorModal, setErrorModal] = useState<{
-    visible: boolean;
-    message: string;
-  }>({ visible: false, message: "" });
 
   // Store selected backup file for import
   const [selectedBackupFile, setSelectedBackupFile] = useState<string | null>(
     null
   );
-
-  // Repository instances (dependency injection pattern)
-  const badHabitRepository = new BadHabitRepository();
-  const insightReportRepository = new InsightReportRepository();
 
   /**
    * Export All Data Handler
@@ -82,10 +64,7 @@ function SettingsScreen() {
       setLoadingMessage("Exporting data...");
 
       // Execute use case
-      const exportUseCase = new ExportAllDataUseCase(
-        badHabitRepository,
-        insightReportRepository
-      );
+      const exportUseCase = new ExportAllDataUseCase();
       const backupData = await exportUseCase.execute();
       console.log(
         `DEBUG: Data fetched - ${backupData.badHabits.length} habits, ${backupData.insightReports.length} insights`
@@ -129,10 +108,11 @@ function SettingsScreen() {
       console.error("DEBUG: ERROR during export:", error);
       console.error("DEBUG: Error message:", error.message);
       console.error("DEBUG: Error stack:", error.stack);
-      setErrorModal({
-        visible: true,
-        message: error.message || "Failed to export data. Please try again.",
-      });
+      Alert.alert(
+        "Export Failed",
+        error.message || "Failed to export data. Please try again.",
+        [{ text: "OK" }]
+      );
     }
   };
 
@@ -153,54 +133,76 @@ function SettingsScreen() {
       }
     } catch (error: any) {
       console.error("File picker error:", error);
-      setErrorModal({
-        visible: true,
-        message: "Failed to select file. Please try again.",
-      });
+      Alert.alert("Error", "Failed to select file. Please try again.", [
+        { text: "OK" },
+      ]);
     }
   };
 
   /**
    * Import Backup - Step 2: Confirm and Execute
    * Reads the selected JSON file and imports data
+   *
+   * CRITICAL: Following InkSight's pattern - complete ALL database work BEFORE updating UI state
+   * to prevent React re-renders while database is locked (which freezes touch events)
    */
   const handleConfirmImport = async () => {
     if (!selectedBackupFile) return;
 
+    // Close confirmation modal and show loading BEFORE any database work
+    setShowImportConfirm(false);
+    setIsLoading(true);
+    setLoadingMessage("Importing backup...");
+
+    // Store file URI locally so we can clear state early
+    const fileUri = selectedBackupFile;
+
     try {
-      setShowImportConfirm(false);
-      setIsLoading(true);
-      setLoadingMessage("Importing backup...");
+      console.log("DEBUG: Starting import from", fileUri);
 
       // Read file content using new expo-file-system API
-      const file = new FileSystem.File(selectedBackupFile);
+      const file = new FileSystem.File(fileUri);
       const fileContent = await file.text();
       const backupData: BackupData = JSON.parse(fileContent);
 
-      // Execute use case
-      const importUseCase = new ImportFromBackupUseCase(
-        badHabitRepository,
-        insightReportRepository
-      );
+      // CRITICAL: Execute database transaction completely BEFORE any state updates
+      // This prevents React re-renders while SQLite has the database locked
+      const importUseCase = new ImportFromBackupUseCase();
       await importUseCase.execute(backupData);
 
+      console.log("DEBUG: Database transaction completed successfully");
+
+      // NOW it's safe to update state - database is unlocked
       setIsLoading(false);
       setSelectedBackupFile(null);
 
-      setSuccessModal({
-        visible: true,
-        message: `Backup imported successfully!\n\nYour data has been restored.`,
-      });
+      console.log("DEBUG: UI state cleared, waiting before alert");
+
+      // CRITICAL: Wait for LoadingModal to fully unmount before showing Alert
+      // Alert.alert() can block event loop if called during React unmount cycle
+      setTimeout(() => {
+        Alert.alert(
+          "Import Successful",
+          "Backup imported successfully!\nYour data has been restored.",
+          [{ text: "OK" }]
+        );
+      }, 300);
     } catch (error: any) {
+      console.error("DEBUG: Import error:", error);
+
+      // Update state after error (safe because transaction is complete or failed)
       setIsLoading(false);
       setSelectedBackupFile(null);
-      console.error("Import error:", error);
-      setErrorModal({
-        visible: true,
-        message:
+
+      // Wait before showing error alert
+      setTimeout(() => {
+        Alert.alert(
+          "Import Failed",
           error.message ||
-          "Failed to import backup. The file may be corrupted or invalid.",
-      });
+            "Failed to import backup. The file may be corrupted or invalid.",
+          [{ text: "OK" }]
+        );
+      }, 300);
     }
   };
 
@@ -214,22 +216,30 @@ function SettingsScreen() {
       setIsLoading(true);
       setLoadingMessage("Clearing habit logs...");
 
-      const clearUseCase = new ClearAllBadHabitsUseCase(badHabitRepository);
+      const clearUseCase = new ClearAllBadHabitsUseCase();
       await clearUseCase.execute();
 
       setIsLoading(false);
-      setSuccessModal({
-        visible: true,
-        message: "All habit logs have been cleared successfully.",
-      });
+
+      // Wait for LoadingModal to unmount before showing Alert
+      setTimeout(() => {
+        Alert.alert(
+          "Success",
+          "All habit logs have been cleared successfully.",
+          [{ text: "OK" }]
+        );
+      }, 300);
     } catch (error: any) {
       setIsLoading(false);
       console.error("Clear habits error:", error);
-      setErrorModal({
-        visible: true,
-        message:
+
+      setTimeout(() => {
+        Alert.alert(
+          "Error",
           error.message || "Failed to clear habit logs. Please try again.",
-      });
+          [{ text: "OK" }]
+        );
+      }, 300);
     }
   };
 
@@ -243,72 +253,80 @@ function SettingsScreen() {
       setIsLoading(true);
       setLoadingMessage("Clearing AI insights...");
 
-      const clearUseCase = new ClearAllInsightReportsUseCase(
-        insightReportRepository
-      );
+      const clearUseCase = new ClearAllInsightReportsUseCase();
       await clearUseCase.execute();
 
       setIsLoading(false);
-      setSuccessModal({
-        visible: true,
-        message: "All AI insights have been cleared successfully.",
-      });
+
+      // Wait for LoadingModal to unmount before showing Alert
+      setTimeout(() => {
+        Alert.alert(
+          "Success",
+          "All AI insights have been cleared successfully.",
+          [{ text: "OK" }]
+        );
+      }, 300);
     } catch (error: any) {
       setIsLoading(false);
       console.error("Clear insights error:", error);
-      setErrorModal({
-        visible: true,
-        message:
+
+      setTimeout(() => {
+        Alert.alert(
+          "Error",
           error.message || "Failed to clear AI insights. Please try again.",
-      });
+          [{ text: "OK" }]
+        );
+      }, 300);
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Data Management Section */}
-        <SettingsSection title="Data Management">
-          <SettingsButton
-            label="Export All Data"
-            description="Create backup and choose where to save it (Files, iCloud, etc.)"
-            icon="💾"
-            variant="primary"
-            onPress={handleExportData}
-          />
-          <SettingsButton
-            label="Import from Backup"
-            description="Restore data from a previous backup (replaces current data)"
-            icon="📥"
-            variant="secondary"
-            onPress={handleSelectBackupFile}
-          />
-        </SettingsSection>
+    <>
+      <SafeAreaView style={styles.container}>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Data Management Section */}
+          <SettingsSection title="Data Management">
+            <SettingsButton
+              label="Export All Data"
+              description="Create backup and choose where to save it (Files, iCloud, etc.)"
+              icon="💾"
+              variant="primary"
+              onPress={handleExportData}
+            />
+            <SettingsButton
+              label="Import from Backup"
+              description="Restore data from a previous backup (replaces current data)"
+              icon="📥"
+              variant="secondary"
+              onPress={handleSelectBackupFile}
+            />
+          </SettingsSection>
 
-        {/* Danger Zone Section */}
-        <SettingsSection title="Danger Zone" isDanger>
-          <SettingsButton
-            label="Clear All Habit Logs"
-            description="Delete all logged habits (keeps habit types)"
-            icon="🗑️"
-            variant="danger"
-            onPress={() => setShowClearHabitsConfirm(true)}
-          />
-          <SettingsButton
-            label="Clear All AI Insights"
-            description="Delete all generated AI reports"
-            icon="🧹"
-            variant="danger"
-            onPress={() => setShowClearInsightsConfirm(true)}
-          />
-        </SettingsSection>
-      </ScrollView>
+          {/* Danger Zone Section */}
+          <SettingsSection title="Danger Zone" isDanger>
+            <SettingsButton
+              label="Clear All Habit Logs"
+              description="Delete all logged habits (keeps habit types)"
+              icon="🗑️"
+              variant="danger"
+              onPress={() => setShowClearHabitsConfirm(true)}
+            />
+            <SettingsButton
+              label="Clear All AI Insights"
+              description="Delete all generated AI reports"
+              icon="🧹"
+              variant="danger"
+              onPress={() => setShowClearInsightsConfirm(true)}
+            />
+          </SettingsSection>
+        </ScrollView>
+      </SafeAreaView>
 
-      {/* Modals */}
+      {/* Modals - Rendered outside SafeAreaView to ensure proper z-index */}
       <LoadingModal visible={isLoading} message={loadingMessage} />
 
       <ConfirmationModal
@@ -346,19 +364,7 @@ function SettingsScreen() {
         onConfirm={handleClearInsights}
         onCancel={() => setShowClearInsightsConfirm(false)}
       />
-
-      <SuccessModal
-        visible={successModal.visible}
-        message={successModal.message}
-        onDismiss={() => setSuccessModal({ visible: false, message: "" })}
-      />
-
-      <ErrorModal
-        visible={errorModal.visible}
-        message={errorModal.message}
-        onDismiss={() => setErrorModal({ visible: false, message: "" })}
-      />
-    </SafeAreaView>
+    </>
   );
 }
 

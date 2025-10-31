@@ -179,4 +179,60 @@ export default class InsightReportRepository
       throw err;
     }
   }
+
+  /**
+   * Delete all insight reports from the database
+   * Used for clearing all data or importing backups
+   */
+  async deleteAll(): Promise<void> {
+    try {
+      const db = getDatabase();
+      await db.runAsync(`DELETE FROM ${InsightReportRepository.tableName};`);
+      console.log("✅ All insight reports deleted successfully");
+    } catch (err) {
+      console.log("Error deleting all insight reports: ", err);
+      throw err;
+    }
+  }
+
+  /**
+   * Bulk insert insight reports (used for import operations)
+   * @param reports - Array of insight reports to insert
+   */
+  async bulkInsert(
+    reports: Array<{
+      id: number;
+      title: string;
+      content: string;
+      createdAt: string;
+      notes?: string;
+    }>
+  ): Promise<void> {
+    try {
+      const db = getDatabase();
+      for (const report of reports) {
+        const createdAtTimestamp = new Date(report.createdAt).getTime();
+        await db.runAsync(
+          `INSERT INTO ${InsightReportRepository.tableName} (
+            ${InsightReportRepository.id},
+            ${InsightReportRepository.title},
+            ${InsightReportRepository.content},
+            ${InsightReportRepository.createdAt},
+            ${InsightReportRepository.notes}
+          ) VALUES (?, ?, ?, ?, ?);`,
+          [
+            report.id,
+            report.title,
+            report.content,
+            createdAtTimestamp,
+            report.notes || null,
+          ]
+        );
+      }
+      console.log(`✅ Bulk inserted ${reports.length} insight reports`);
+    } catch (err) {
+      console.log("Error bulk inserting insight reports: ", err);
+      throw err;
+    }
+  }
 }
