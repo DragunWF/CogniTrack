@@ -15,7 +15,6 @@ import { mainColors } from "../../shared/constants/colors";
 import SettingsSection from "../components/settings/SettingsSection";
 import SettingsButton from "../components/settings/SettingsButton";
 import ConfirmationModal from "../components/settings/ConfirmationModal";
-import LoadingModal from "../components/settings/LoadingModal";
 
 // Use cases
 import {
@@ -40,8 +39,6 @@ import {
 
 function SettingsScreen() {
   // Modal states
-  const [isLoading, setIsLoading] = useState(false);
-  const [loadingMessage, setLoadingMessage] = useState("Processing...");
   const [showImportConfirm, setShowImportConfirm] = useState(false);
   const [showClearHabitsConfirm, setShowClearHabitsConfirm] = useState(false);
   const [showClearInsightsConfirm, setShowClearInsightsConfirm] =
@@ -56,28 +53,25 @@ function SettingsScreen() {
    * Export All Data Handler
    * Creates backup file and opens share sheet (iOS standard for file export)
    * NOTE: iOS doesn't have a "save file picker" API - only share sheet with "Save to Files" option
+   *
+   * FIX: Removed LoadingModal to prevent touch blocking issue
    */
   const handleExportData = async () => {
     try {
-      console.log("DEBUG: Starting export process...");
-      setIsLoading(true);
-      setLoadingMessage("Exporting data...");
+      // REMOVED: LoadingModal causes touch responder system to break
+      // setIsLoading(true);
+      // setLoadingMessage("Exporting data...");
 
       // Execute use case
       const exportUseCase = new ExportAllDataUseCase();
       const backupData = await exportUseCase.execute();
-      console.log(
-        `DEBUG: Data fetched - ${backupData.badHabits.length} habits, ${backupData.insightReports.length} insights`
-      );
 
       // Generate filename with timestamp
       const timestamp = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
       const filename = `cognitrack-backup-${timestamp}.json`;
-      console.log(`DEBUG: Generated filename: ${filename}`);
 
       // Create file in cache directory (matching InkSight exactly)
       const file = new FileSystem.File(FileSystem.Paths.cache, filename);
-      console.log(`DEBUG: File path: ${file.uri}`);
 
       // Write data to file
       await file.write(JSON.stringify(backupData, null, 2));
@@ -93,7 +87,7 @@ function SettingsScreen() {
           UTI: "public.json",
         });
       } else {
-        setIsLoading(false);
+        // setIsLoading(false); // REMOVED
         Alert.alert(
           "Export Successful",
           `Your data has been exported to:\n${file.uri}\n\nYou can find this file in your app's cache folder.`,
@@ -102,12 +96,9 @@ function SettingsScreen() {
         return;
       }
 
-      setIsLoading(false);
+      // setIsLoading(false); // REMOVED
     } catch (error: any) {
-      setIsLoading(false);
-      console.error("DEBUG: ERROR during export:", error);
-      console.error("DEBUG: Error message:", error.message);
-      console.error("DEBUG: Error stack:", error.stack);
+      // setIsLoading(false); // REMOVED
       Alert.alert(
         "Export Failed",
         error.message || "Failed to export data. Please try again.",
@@ -143,140 +134,124 @@ function SettingsScreen() {
    * Import Backup - Step 2: Confirm and Execute
    * Reads the selected JSON file and imports data
    *
-   * CRITICAL: Following InkSight's pattern - complete ALL database work BEFORE updating UI state
-   * to prevent React re-renders while database is locked (which freezes touch events)
+   * FIX: Removed LoadingModal to prevent touch blocking issue
    */
   const handleConfirmImport = async () => {
     if (!selectedBackupFile) return;
 
-    // Close confirmation modal and show loading BEFORE any database work
+    // Close confirmation modal
     setShowImportConfirm(false);
-    setIsLoading(true);
-    setLoadingMessage("Importing backup...");
+    // REMOVED: LoadingModal causes touch responder system to break
+    // setIsLoading(true);
+    // setLoadingMessage("Importing backup...");
 
     // Store file URI locally so we can clear state early
     const fileUri = selectedBackupFile;
 
     try {
-      console.log("DEBUG: Starting import from", fileUri);
-
       // Read file content using new expo-file-system API
       const file = new FileSystem.File(fileUri);
       const fileContent = await file.text();
       const backupData: BackupData = JSON.parse(fileContent);
 
-      // CRITICAL: Execute database transaction completely BEFORE any state updates
-      // This prevents React re-renders while SQLite has the database locked
+      // Execute database transaction
       const importUseCase = new ImportFromBackupUseCase();
       await importUseCase.execute(backupData);
 
-      console.log("DEBUG: Database transaction completed successfully");
-
-      // NOW it's safe to update state - database is unlocked
-      setIsLoading(false);
+      // Clear state
+      // setIsLoading(false); // REMOVED
       setSelectedBackupFile(null);
 
-      console.log("DEBUG: UI state cleared, waiting before alert");
-
-      // CRITICAL: Wait for LoadingModal to fully unmount before showing Alert
-      // Alert.alert() can block event loop if called during React unmount cycle
-      setTimeout(() => {
-        Alert.alert(
-          "Import Successful",
-          "Backup imported successfully!\nYour data has been restored.",
-          [{ text: "OK" }]
-        );
-      }, 300);
+      // Show success alert immediately
+      Alert.alert(
+        "Import Successful",
+        "Backup imported successfully!\nYour data has been restored.",
+        [{ text: "OK" }]
+      );
     } catch (error: any) {
-      console.error("DEBUG: Import error:", error);
-
-      // Update state after error (safe because transaction is complete or failed)
-      setIsLoading(false);
+      // Clear state
+      // setIsLoading(false); // REMOVED
       setSelectedBackupFile(null);
 
-      // Wait before showing error alert
-      setTimeout(() => {
-        Alert.alert(
-          "Import Failed",
-          error.message ||
-            "Failed to import backup. The file may be corrupted or invalid.",
-          [{ text: "OK" }]
-        );
-      }, 300);
+      // Show error alert
+      Alert.alert(
+        "Import Failed",
+        error.message ||
+          "Failed to import backup. The file may be corrupted or invalid.",
+        [{ text: "OK" }]
+      );
     }
   };
 
   /**
    * Clear All Habit Logs
    * Deletes all BadHabit records from the database
+   *
+   * TEST: Removed LoadingModal to diagnose touch blocking issue
    */
   const handleClearHabits = async () => {
     try {
       setShowClearHabitsConfirm(false);
-      setIsLoading(true);
-      setLoadingMessage("Clearing habit logs...");
+      // TESTING: No loading modal
+      // setIsLoading(true);
+      // setLoadingMessage("Clearing habit logs...");
 
       const clearUseCase = new ClearAllBadHabitsUseCase();
       await clearUseCase.execute();
 
-      setIsLoading(false);
+      // TESTING: No loading modal to unmount
+      // setIsLoading(false);
 
-      // Wait for LoadingModal to unmount before showing Alert
-      setTimeout(() => {
-        Alert.alert(
-          "Success",
-          "All habit logs have been cleared successfully.",
-          [{ text: "OK" }]
-        );
-      }, 300);
+      // Show alert immediately (no modal to wait for)
+      Alert.alert("Success", "All habit logs have been cleared successfully.", [
+        { text: "OK" },
+      ]);
     } catch (error: any) {
-      setIsLoading(false);
+      // setIsLoading(false);
       console.error("Clear habits error:", error);
 
-      setTimeout(() => {
-        Alert.alert(
-          "Error",
-          error.message || "Failed to clear habit logs. Please try again.",
-          [{ text: "OK" }]
-        );
-      }, 300);
+      Alert.alert(
+        "Error",
+        error.message || "Failed to clear habit logs. Please try again.",
+        [{ text: "OK" }]
+      );
     }
   };
 
   /**
    * Clear All AI Insights
    * Deletes all InsightReport records from the database
+   *
+   * FIX: Removed LoadingModal to prevent touch blocking issue
    */
   const handleClearInsights = async () => {
     try {
       setShowClearInsightsConfirm(false);
-      setIsLoading(true);
-      setLoadingMessage("Clearing AI insights...");
+      // REMOVED: LoadingModal causes touch responder system to break
+      // setIsLoading(true);
+      // setLoadingMessage("Clearing AI insights...");
 
       const clearUseCase = new ClearAllInsightReportsUseCase();
       await clearUseCase.execute();
 
-      setIsLoading(false);
+      // REMOVED: No loading modal to unmount
+      // setIsLoading(false);
 
-      // Wait for LoadingModal to unmount before showing Alert
-      setTimeout(() => {
-        Alert.alert(
-          "Success",
-          "All AI insights have been cleared successfully.",
-          [{ text: "OK" }]
-        );
-      }, 300);
+      // Show alert immediately
+      Alert.alert(
+        "Success",
+        "All AI insights have been cleared successfully.",
+        [{ text: "OK" }]
+      );
     } catch (error: any) {
-      setIsLoading(false);
+      // setIsLoading(false); // REMOVED
       console.error("Clear insights error:", error);
 
-      setTimeout(() => {
-        Alert.alert(
-          "Error",
-          error.message || "Failed to clear AI insights. Please try again.",
-          [{ text: "OK" }]
-        );
-      }, 300);
+      Alert.alert(
+        "Error",
+        error.message || "Failed to clear AI insights. Please try again.",
+        [{ text: "OK" }]
+      );
     }
   };
 
@@ -327,7 +302,7 @@ function SettingsScreen() {
       </SafeAreaView>
 
       {/* Modals - Rendered outside SafeAreaView to ensure proper z-index */}
-      <LoadingModal visible={isLoading} message={loadingMessage} />
+      {/* LoadingModal REMOVED - causes touch responder system to break on iOS */}
 
       <ConfirmationModal
         visible={showImportConfirm}
