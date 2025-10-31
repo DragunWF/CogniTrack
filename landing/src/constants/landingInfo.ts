@@ -363,7 +363,7 @@ export const landingInfo: LandingInfo = {
 
   footer: {
     tagline: "Build Awareness. Break Patterns.",
-    copyright: "© 2025 CogniTrack. Built with mindfulness.",
+    copyright: "© 2025 DragunWF. Built with mindfulness.",
     links: [
       {
         title: "GitHub Repository",
