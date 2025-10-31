@@ -1,0 +1,203 @@
+.section {
+  padding: var(--spacing-3xl) 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(107, 95, 204, 0.05) 0%,
+    rgba(77, 189, 179, 0.05) 100%
+  );
+  z-index: -1;
+}
+
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.badge {
+  display: inline-block;
+  background: linear-gradient(
+    135deg,
+    var(--color-accent-500),
+    var(--color-accent-700)
+  );
+  color: var(--color-text-primary);
+  padding: var(--spacing-xs) var(--spacing-lg);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-lg);
+  box-shadow: var(--glow-accent);
+}
+
+.title {
+  font-size: var(--font-size-4xl);
+  margin-bottom: var(--spacing-lg);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-300),
+    var(--color-accent-300)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.philosophy {
+  font-size: var(--font-size-xl);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-xl);
+}
+
+.principle {
+  margin: var(--spacing-xl) 0;
+  padding: var(--spacing-lg);
+  background: var(--color-background-card);
+  border: 2px solid var(--color-primary-500);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--glow-primary);
+}
+
+.principleText {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary-300);
+  letter-spacing: 1px;
+}
+
+.flowDiagram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  margin: var(--spacing-3xl) 0;
+  flex-wrap: wrap;
+}
+
+.flowItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md);
+  background: var(--color-background-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  min-width: 100px;
+  transition: all var(--transition-base);
+}
+
+.flowItem:hover {
+  transform: scale(1.05);
+  border-color: var(--color-accent-500);
+  box-shadow: var(--glow-accent);
+}
+
+.flowIcon {
+  font-size: var(--font-size-4xl);
+}
+
+.flowLabel {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+}
+
+.flowArrow {
+  font-size: var(--font-size-2xl);
+  color: var(--color-accent-500);
+  font-weight: var(--font-weight-bold);
+}
+
+.quote {
+  margin-top: var(--spacing-3xl);
+  padding: var(--spacing-xl);
+  background: var(--color-background-elevated);
+  border-left: 4px solid var(--color-accent-500);
+  border-radius: var(--radius-lg);
+  font-style: italic;
+}
+
+.quoteText {
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+.quoteAuthor {
+  display: block;
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
+  font-style: normal;
+  font-weight: var(--font-weight-medium);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .section {
+    padding: var(--spacing-2xl) 0;
+  }
+
+  .title {
+    font-size: var(--font-size-3xl);
+  }
+
+  .philosophy {
+    font-size: var(--font-size-lg);
+  }
+
+  .principleText {
+    font-size: var(--font-size-2xl);
+  }
+
+  .flowDiagram {
+    gap: var(--spacing-sm);
+  }
+
+  .flowItem {
+    min-width: 80px;
+    padding: var(--spacing-sm);
+  }
+
+  .flowIcon {
+    font-size: var(--font-size-3xl);
+  }
+
+  .flowArrow {
+    font-size: var(--font-size-xl);
+  }
+
+  .quote {
+    padding: var(--spacing-md);
+  }
+
+  .quoteText {
+    font-size: var(--font-size-base);
+  }
+}
+
+@media (max-width: 480px) {
+  .flowDiagram {
+    flex-direction: column;
+  }
+
+  .flowArrow {
+    transform: rotate(90deg);
+  }
+
+  .principleText {
+    font-size: var(--font-size-xl);
+  }
+}

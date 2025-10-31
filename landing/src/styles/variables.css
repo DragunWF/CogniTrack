@@ -1,0 +1,100 @@
+:root {
+  /* Primary Colors (Deep Purple/Blue - Mindfulness & Focus) */
+  --color-primary-500: #6b5fcc;
+  --color-primary-700: #4a3fa3;
+  --color-primary-300: #8b7fdc;
+
+  /* Accent Colors (Teal - Balance & clarity) */
+  --color-accent-500: #4dbdb3;
+  --color-accent-700: #3a9990;
+  --color-accent-300: #6dcdc3;
+
+  /* Backgrounds (Dark, calming) */
+  --color-background: #0f0e17;
+  --color-background-card: #232135;
+  --color-background-elevated: #1a1823;
+
+  /* Text */
+  --color-text-primary: #fffffe;
+  --color-text-secondary: #a7a9be;
+  --color-text-muted: #6e7191;
+
+  /* Borders */
+  --color-border: #2e2d3d;
+  --color-border-accent: rgba(107, 95, 204, 0.3);
+
+  /* Spacing (8px base) */
+  --spacing-xs: 0.5rem; /* 8px */
+  --spacing-sm: 1rem; /* 16px */
+  --spacing-md: 1.5rem; /* 24px */
+  --spacing-lg: 2rem; /* 32px */
+  --spacing-xl: 3rem; /* 48px */
+  --spacing-2xl: 4rem; /* 64px */
+  --spacing-3xl: 6rem; /* 96px */
+
+  /* Typography */
+  --font-family-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  --font-family-mono: "JetBrains Mono", "Courier New", monospace;
+
+  --font-size-xs: 0.75rem; /* 12px */
+  --font-size-sm: 0.875rem; /* 14px */
+  --font-size-base: 1rem; /* 16px */
+  --font-size-lg: 1.125rem; /* 18px */
+  --font-size-xl: 1.25rem; /* 20px */
+  --font-size-2xl: 1.5rem; /* 24px */
+  --font-size-3xl: 1.875rem; /* 30px */
+  --font-size-4xl: 2.25rem; /* 36px */
+  --font-size-5xl: 3rem; /* 48px */
+  --font-size-6xl: 3.75rem; /* 60px */
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.3s ease;
+  --transition-slow: 0.6s ease;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-base: 0 4px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.7);
+
+  /* Glow Effects */
+  --glow-primary: 0 0 20px rgba(107, 95, 204, 0.4);
+  --glow-accent: 0 0 20px rgba(77, 189, 179, 0.4);
+  --glow-primary-strong: 0 0 40px rgba(107, 95, 204, 0.6);
+  --glow-accent-strong: 0 0 40px rgba(77, 189, 179, 0.6);
+
+  /* Z-index layers */
+  --z-base: 1;
+  --z-elevated: 10;
+  --z-dropdown: 100;
+  --z-sticky: 500;
+  --z-modal: 1000;
+  --z-tooltip: 2000;
+
+  /* Container widths */
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1536px;
+}
