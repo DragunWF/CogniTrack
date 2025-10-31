@@ -21,6 +21,11 @@ function InsightNavigator() {
       <Stack.Screen
         name={INSIGHT_NAVIGATION_ROUTES.INSIGHT_DETAIL}
         component={InsightDetailScreen}
+        options={{
+          headerShown: true,
+          title: "Insight Report", // This is the current screen's title
+          headerBackTitle: "Insights", // 👈 This explicitly sets the back button text
+        }}
       />
     </Stack.Navigator>
   );

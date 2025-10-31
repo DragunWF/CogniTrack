@@ -18,7 +18,7 @@ export default function App() {
         // Initializes the database once the app loads
 
         // Uncomment this when you want to reset the database during development
-        await resetDatabase();
+        // await resetDatabase();
 
         await initDatabase();
         setIsDbInitialized(true);

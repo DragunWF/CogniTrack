@@ -232,4 +232,31 @@ export default class BadHabitRepository implements IBadHabitRepository {
       throw err;
     }
   }
+
+  /**
+   * Get bad habits within a date range (inclusive)
+   * @param startDate - Start date of the range
+   * @param endDate - End date of the range
+   * @returns Array of bad habits within the date range
+   */
+  async getByDateRange(startDate: Date, endDate: Date): Promise<BadHabit[]> {
+    try {
+      const db = getDatabase();
+      const startTimestamp = new Date(startDate.setHours(0, 0, 0, 0)).getTime();
+      const endTimestamp = new Date(
+        endDate.setHours(23, 59, 59, 999)
+      ).getTime();
+
+      const results = await db.getAllAsync<BadHabit>(
+        `SELECT * FROM ${BadHabitRepository.tableName} 
+         WHERE ${BadHabitRepository.datetime} BETWEEN ? AND ? 
+         ORDER BY ${BadHabitRepository.datetime} DESC;`,
+        [startTimestamp, endTimestamp]
+      );
+      return results as BadHabit[];
+    } catch (err) {
+      console.log("Error retrieving bad habits by date range: ", err);
+      throw err;
+    }
+  }
 }

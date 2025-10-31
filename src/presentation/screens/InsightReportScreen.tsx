@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   StyleSheet,
   View,
@@ -16,8 +16,10 @@ import {
   GetInsightReportsByDateRangeUseCase,
   CreateInsightReportUseCase,
 } from "../../application/useCases/insightReportUseCases";
+import { GenerateInsightUseCase } from "../../application/useCases/generateInsightUseCase";
 import { StackNavigationProp } from "@react-navigation/stack";
 import DatePickerModal from "../components/common/DatePickerModal";
+import ErrorModal from "../components/common/ErrorModal";
 
 /**
  * InsightReportScreen - List view of AI-generated insight reports
@@ -25,14 +27,16 @@ import DatePickerModal from "../components/common/DatePickerModal";
  * Features:
  * - Filter by time range (This Month, This Year, All Time)
  * - Display report cards with title and creation date
- * - FAB to generate new insights (mocked for now)
+ * - FAB to generate new AI-powered insights
  * - Navigate to detail view on card tap
  *
- * Mock Flow:
+ * Generation Flow:
  * 1. Tap FAB → Date picker modal
- * 2. Select end date → Confirmation alert
- * 3. Confirm → 2-second loading → Mock report created
+ * 2. Select end date → AI analyzes 30-day period
+ * 3. Gemini API generates insights → Report saved
  * 4. Navigate to detail screen with new report
+ *
+ * Architecture Layer: Presentation (Screen Component)
  */
 
 type FilterRange = "This Month" | "This Year" | "All Time";
@@ -78,7 +82,7 @@ function InsightReportScreen() {
    * Reload reports when screen comes into focus
    */
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       loadReports();
     }, [filterRange])
   );
@@ -99,31 +103,31 @@ function InsightReportScreen() {
   };
 
   /**
-   * Mock AI generation with 2-second delay
+   * Generate AI-powered insight report
+   * Fetches bad habit data from the date range and uses Gemini API for analysis
    */
   const generateMockReport = async (startDate: Date, endDate: Date) => {
     setIsGenerating(true);
 
-    // Simulate AI processing
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
     try {
-      // Create mock report
-      const mockReport: Omit<InsightReport, "id"> = {
-        title: `Habit Analysis: ${formatDate(endDate)}`,
-        content: `# 30-Day Habit Analysis\n\n## Overview\n\nThis is a **mocked** AI-generated insight report.\n\n### Analysis Period\n- Start: ${formatDate(
-          startDate
-        )}\n- End: ${formatDate(
-          endDate
-        )}\n\n### Key Findings\n\n- The real AI analysis will appear here.\n- Patterns and trends will be identified.\n- Actionable recommendations will be provided.\n\n### Next Steps\n\n1. Review your habit patterns\n2. Implement suggested strategies\n3. Track your progress\n\n---\n\n*This report was generated as a placeholder. Real AI insights coming soon!*`,
+      // Generate insights using AI
+      const generateUseCase = new GenerateInsightUseCase();
+      const { title, content } = await generateUseCase.execute(
+        startDate,
+        endDate
+      );
+
+      // Create and save report
+      const report: Omit<InsightReport, "id"> = {
+        title,
+        content,
         createdAt: new Date(),
         notes: "",
       };
 
-      // Save to database
       const createUseCase = new CreateInsightReportUseCase();
       const newReportId = await createUseCase.execute({
-        ...mockReport,
+        ...report,
         id: 0, // Will be ignored by database
       } as InsightReport);
 
@@ -133,8 +137,10 @@ function InsightReportScreen() {
       navigation.navigate("InsightDetail", { reportId: newReportId });
     } catch (error) {
       setIsGenerating(false);
-      console.error("Error creating mock report:", error);
-      setErrorMessage("Failed to generate insight report. Please try again.");
+      console.error("Error generating insight report:", error);
+      setErrorMessage(
+        "Failed to generate insight report. Please check your internet connection and try again."
+      );
       setShowErrorModal(true);
     }
   };
@@ -235,6 +241,13 @@ function InsightReportScreen() {
         onDateSelected={handleDateConfirm}
         onCancel={() => setDatePickerVisible(false)}
         maximumDate={new Date()}
+      />
+
+      {/* Error Modal */}
+      <ErrorModal
+        visible={showErrorModal}
+        message={errorMessage}
+        onDismiss={() => setShowErrorModal(false)}
       />
 
       {/* Loading Overlay for Generation */}

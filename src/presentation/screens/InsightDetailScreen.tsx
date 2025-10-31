@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -18,19 +18,24 @@ import {
   GetInsightReportByIdUseCase,
   UpdateInsightNotesUseCase,
 } from "../../application/useCases/insightReportUseCases";
+import ErrorModal from "../components/common/ErrorModal";
+import SuccessModal from "../components/common/SuccessModal";
 
 /**
- * InsightDetailScreen - Detailed view of a single insight report
+ * InsightDetailScreen - Detailed view of a single AI-generated insight report
  *
  * Features:
- * - Display title and creation date
- * - Render markdown content with AI-generated insights
- * - Editable notes section for user annotations
- * - Auto-save functionality for notes
+ * - Display report title and creation date
+ * - Render AI-generated markdown content with custom dark theme styling
+ * - Editable notes section for user personal reflections
+ * - Save notes functionality with success/error feedback
  *
  * Navigation:
  * - Receives reportId via route params
- * - Fetches full report from database
+ * - Fetches full report from database on mount
+ * - Displays error and navigates back if report not found
+ *
+ * Architecture Layer: Presentation (Screen Component)
  */
 
 type RootStackParamList = {
@@ -53,7 +58,6 @@ function InsightDetailScreen() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [showNotFoundModal, setShowNotFoundModal] = useState(false);
 
   /**
    * Load report data on mount
@@ -68,31 +72,35 @@ function InsightDetailScreen() {
   const loadReport = async () => {
     setLoading(true);
     try {
+      console.log("🔍 Loading report with ID:", reportId);
       const useCase = new GetInsightReportByIdUseCase();
       const fetchedReport = await useCase.execute(reportId);
 
       if (!fetchedReport) {
-        setShowNotFoundModal(true);
+        console.log("❌ Report not found in database");
+        setErrorMessage("Report not found. It may have been deleted.");
+        setShowErrorModal(true);
+        setTimeout(() => {
+          navigation.goBack();
+        }, 2000);
         return;
       }
+
+      console.log("✅ Report loaded successfully:", {
+        title: fetchedReport.title,
+        contentLength: fetchedReport.content?.length || 0,
+        hasNotes: !!fetchedReport.notes,
+      });
 
       setReport(fetchedReport);
       setNotes(fetchedReport.notes || "");
     } catch (error) {
-      console.error("Error loading report:", error);
+      console.error("❌ Error loading report:", error);
       setErrorMessage("Failed to load insight report. Please try again.");
       setShowErrorModal(true);
     } finally {
       setLoading(false);
     }
-  };
-
-  /**
-   * Handle not found modal confirmation
-   */
-  const handleNotFoundConfirm = () => {
-    setShowNotFoundModal(false);
-    navigation.goBack();
   };
 
   /**
@@ -105,6 +113,10 @@ function InsightDetailScreen() {
     try {
       const useCase = new UpdateInsightNotesUseCase();
       await useCase.execute(reportId, notes);
+
+      // Update local report state
+      setReport({ ...report, notes });
+
       setShowSuccessModal(true);
     } catch (error) {
       console.error("Error saving notes:", error);
@@ -132,9 +144,9 @@ function InsightDetailScreen() {
   }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={styles.container}>
       <ScrollView
-        style={styles.container}
+        style={styles.scrollView}
         contentContainerStyle={styles.content}
       >
         {/* Header Section */}
@@ -178,6 +190,20 @@ function InsightDetailScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      {/* Success Modal */}
+      <SuccessModal
+        visible={showSuccessModal}
+        message="Your notes have been saved successfully!"
+        onDismiss={() => setShowSuccessModal(false)}
+      />
+
+      {/* Error Modal */}
+      <ErrorModal
+        visible={showErrorModal}
+        message={errorMessage}
+        onDismiss={() => setShowErrorModal(false)}
+      />
     </SafeAreaView>
   );
 }
@@ -186,6 +212,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: mainColors.background,
+  },
+  scrollView: {
+    flex: 1,
   },
   content: {
     padding: 20,

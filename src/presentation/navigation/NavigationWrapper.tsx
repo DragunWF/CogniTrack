@@ -35,7 +35,10 @@ function NavigationWrapper() {
         <Stack.Screen
           name="MainApp"
           component={AppNavigator}
-          options={{ headerShown: false }}
+          options={{
+            headerShown: false,
+            headerTitle: "Insights", // This is set for the back button of viewing an insight report
+          }}
         />
 
         {/* Insight Detail Screen */}

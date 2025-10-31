@@ -92,6 +92,7 @@ export default class InsightReportRepository
         title: row.title,
         content: row.content,
         createdAt: new Date(row.createdAt),
+        notes: row.notes ?? "",
       }));
     } catch (err) {
       console.log("Error retrieving insight reports: ", err);
@@ -108,12 +109,18 @@ export default class InsightReportRepository
       );
       if (result) {
         console.log("✅ Retrieved insight report successfully with ID: ", id);
+        console.log("📄 Report data:", {
+          id: result.id,
+          title: result.title,
+          contentLength: result.content?.length || 0,
+          hasNotes: !!result.notes,
+        });
         return {
           id: result.id,
           title: result.title,
           content: result.content,
           createdAt: new Date(result.createdAt),
-          notes: result.notes ?? undefined,
+          notes: result.notes ?? "",
         };
       } else {
         console.log("⚠️ No insight report found with ID: ", id);
@@ -149,7 +156,7 @@ export default class InsightReportRepository
         title: row.title,
         content: row.content,
         createdAt: new Date(row.createdAt),
-        notes: row.notes ?? undefined,
+        notes: row.notes ?? "",
       }));
     } catch (err) {
       console.log("Error retrieving insight reports by date range: ", err);
