@@ -52,6 +52,7 @@ git clone https://github.com/DragunWF/CogniTrack.git
 
 # 2. Navigate to the project directory
 cd CogniTrack
+cd app
 
 # 3. Install dependencies
 npm install
