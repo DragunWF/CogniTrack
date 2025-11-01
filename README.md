@@ -40,7 +40,7 @@ The goal is not to be a comprehensive life-planner, but to be a frictionless, sp
 - **Framework:** React Native with Expo SDK 54
 - **Programming Language:** TypeScript (strict mode)
 - **Database:** SQLite via expo-sqlite (persistent, on-device storage)
-- **AI Integration:** Google Gemini API 2.0 Flash
+- **AI Integration:** Google Gemini API 2.5 Flash
 - **File System:** expo-file-system for backup/restore operations
 - **Architecture Pattern:** Clean Architecture (Domain, Application, Infrastructure, Presentation layers)
 
