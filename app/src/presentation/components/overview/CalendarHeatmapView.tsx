@@ -63,7 +63,13 @@ function CalendarHeatmapView({
     for (let i = 89; i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i);
-      const dateKey = date.toISOString().split("T")[0];
+      const pad = (n: number) => n.toString().padStart(2, "0");
+      const dateKey =
+        date.getFullYear() +
+        "-" +
+        pad(date.getMonth() + 1) +
+        "-" +
+        pad(date.getDate()); // Local time-based
 
       days.push({
         date: dateKey,
