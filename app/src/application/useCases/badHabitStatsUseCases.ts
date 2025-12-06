@@ -1,5 +1,6 @@
 import BadHabit from "../../domain/entities/badHabit";
 import BadHabitRepository from "../../infrastructure/database/badHabitRepository";
+import { capitalize } from "../../shared/helpers/utils";
 
 /**
  * Statistics Use Cases for Bad Habits
@@ -132,6 +133,8 @@ export class GetBreakdownDataUseCase {
     timeRange: TimeRange,
     breakdownType: "habit" | "trigger" | "location"
   ): Promise<BreakdownItem[]> {
+    const unknownKey = "Unknown";
+
     const repository = new BadHabitRepository();
     const { start, end } = getDateRange(timeRange);
 
@@ -147,24 +150,26 @@ export class GetBreakdownDataUseCase {
       let key: string;
       switch (breakdownType) {
         case "habit":
-          key = habit.name;
+          key = capitalize(habit.name);
           break;
         case "trigger":
-          key = habit.trigger || "Unknown";
+          key = capitalize(habit.trigger) || unknownKey;
           break;
         case "location":
-          key = habit.location || "Unknown";
+          key = capitalize(habit.location) || unknownKey;
           break;
       }
       itemMap.set(key, (itemMap.get(key) || 0) + 1);
     }); // Convert to array and calculate percentages
     const breakdown: BreakdownItem[] = [];
     itemMap.forEach((value, label) => {
-      breakdown.push({
-        label,
-        value,
-        percentage: total > 0 ? (value / total) * 100 : 0,
-      });
+      if (label !== unknownKey) {
+        breakdown.push({
+          label,
+          value,
+          percentage: total > 0 ? (value / total) * 100 : 0,
+        });
+      }
     });
 
     // Sort by value descending
