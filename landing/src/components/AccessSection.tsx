@@ -19,7 +19,9 @@ export const AccessSection = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className={styles.title}>{access.title}</h2>
+          <h2 className={styles.title}>
+            <span className="gradient-text">{access.title}</span>
+          </h2>
           <p className={styles.subtitle}>{access.subtitle}</p>
         </motion.div>
 

@@ -16,7 +16,9 @@ export const AIShowcase = () => {
           transition={{ duration: 0.6 }}
         >
           <div className={styles.badge}>{aiShowcase.badge}</div>
-          <h2 className={styles.title}>{aiShowcase.title}</h2>
+          <h2 className={styles.title}>
+            <span className="gradient-text">{aiShowcase.title}</span>
+          </h2>
           <p className={styles.description}>{aiShowcase.description}</p>
         </motion.div>
 

@@ -34,7 +34,9 @@ export const FeaturesGrid = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className={styles.title}>{features.title}</h2>
+          <h2 className={styles.title}>
+            <span className="gradient-text">{features.title}</span>
+          </h2>
           <p className={styles.subtitle}>{features.subtitle}</p>
         </motion.div>
 

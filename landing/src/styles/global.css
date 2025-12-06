@@ -131,6 +131,22 @@ button:focus-visible {
   color: var(--color-text-primary);
 }
 
+::-moz-selection {
+  background-color: var(--color-primary-500);
+  color: var(--color-text-primary);
+}
+
+/* For gradient text, we need to override the transparent fill */
+.gradient-text::selection {
+  -webkit-text-fill-color: var(--color-text-primary);
+  color: var(--color-text-primary);
+}
+
+.gradient-text::-moz-selection {
+  -webkit-text-fill-color: var(--color-text-primary);
+  color: var(--color-text-primary);
+}
+
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 10px;

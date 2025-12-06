@@ -19,7 +19,9 @@ export const CoreConcept = () => {
         >
           <div className={styles.badge}>{concept.badge}</div>
 
-          <h2 className={styles.title}>{concept.title}</h2>
+          <h2 className={styles.title}>
+            <span className="gradient-text">{concept.title}</span>
+          </h2>
 
           <p className={styles.philosophy}>{concept.philosophy}</p>
 
