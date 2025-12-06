@@ -222,7 +222,6 @@ function HabitModal({
                   onChangeText={setLocation}
                   placeholder="e.g., Living Room"
                   error={errors.location}
-                  autoFocus={mode === HabitModalModeEnum.ADD}
                   maxLength={LOCATION_CONSTRAINTS.MAX_LENGTH}
                 />
 
@@ -232,7 +231,6 @@ function HabitModal({
                   onChangeText={setTrigger}
                   placeholder="e.g., Stress, Boredom"
                   error={errors.trigger}
-                  autoFocus={mode === HabitModalModeEnum.ADD}
                   maxLength={TRIGGER_CONSTRAINTS.MAX_LENGTH}
                 />
 
