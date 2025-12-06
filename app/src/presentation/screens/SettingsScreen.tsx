@@ -276,7 +276,7 @@ function SettingsScreen() {
               label="Import from Backup"
               description="Restore data from a previous backup (replaces current data)"
               icon="📥"
-              variant="secondary"
+              variant="primary"
               onPress={handleSelectBackupFile}
             />
           </SettingsSection>
