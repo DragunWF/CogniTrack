@@ -33,7 +33,13 @@ export class GetDailyHabitCountsUseCase {
 
     allHabits.forEach((habit) => {
       const date = new Date(habit.datetime);
-      const dateKey = date.toISOString().split("T")[0]; // YYYY-MM-DD
+      const pad = (n: number) => n.toString().padStart(2, "0");
+      const dateKey =
+        date.getFullYear() +
+        "-" +
+        pad(date.getMonth() + 1) +
+        "-" +
+        pad(date.getDate()); // Local time-based
 
       if (dailyMap.has(dateKey)) {
         const existing = dailyMap.get(dateKey)!;
