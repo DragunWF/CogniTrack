@@ -23,7 +23,7 @@ import { mainColors } from "../../../shared/constants/colors";
 interface HabitAggregate {
   name: string;
   count: number;
-  description: string;
+  description?: string;
   lastOccurrence: number;
 }
 

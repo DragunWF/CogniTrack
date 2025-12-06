@@ -197,6 +197,33 @@ function BadHabitScreen() {
   };
 
   /**
+   * Deletes a habit entry and refreshes the data
+   */
+  const handleDeleteHabit = async (habitId: number) => {
+    try {
+      const deleteUseCase = new DeleteBadHabitUseCase();
+      await deleteUseCase.execute(habitId);
+
+      Toast.show({
+        type: "success",
+        text1: "Habit Deleted",
+        text2: "The habit entry has been removed.",
+      });
+
+      await fetchHabitData();
+    } catch (error) {
+      console.error("Error deleting habit:", error);
+      Toast.show({
+        type: "error",
+        text1: "Delete Failed",
+        text2: "There was an error deleting the habit.",
+      });
+      // Re-throw to inform the modal not to close
+      throw error;
+    }
+  };
+
+  /**
    * Opens the modal in add mode for creating a new habit entry
    */
   const handleAddHabit = () => {
@@ -223,7 +250,7 @@ function BadHabitScreen() {
       if (modalMode === HabitModalModeEnum.ADD) {
         // Create new habit entry
         const createBadHabit = new CreateBadHabitUseCase();
-        const id = await createBadHabit.execute(data);
+        await createBadHabit.execute(data);
 
         Toast.show({
           type: "success",
@@ -234,24 +261,15 @@ function BadHabitScreen() {
         // Update existing habit entry
         if (editingHabit?.id) {
           const updateBadHabit = new UpdateBadHabitUseCase();
-          const isUpdated = await updateBadHabit.execute({
+          await updateBadHabit.execute({
             ...data,
             id: editingHabit.id,
           });
 
-          if (isUpdated) {
-            Toast.show({
-              type: "success",
-              text1: "Habit Updated",
-              text2: `${data.name} updated successfully`,
-            });
-          }
-        } else {
           Toast.show({
-            type: "error",
-            text1: "Habit Update Failed",
-            text2:
-              "An unexpected error has occurred while trying to update your habit!",
+            type: "success",
+            text1: "Habit Updated",
+            text2: `${data.name} updated successfully`,
           });
         }
       }
@@ -335,6 +353,7 @@ function BadHabitScreen() {
                   trigger={log.trigger}
                   notes={log.notes}
                   onPress={() => handleLogItemPress(log.id)}
+                  onDelete={handleDeleteHabit}
                 />
               ))}
             </View>
@@ -363,6 +382,7 @@ function BadHabitScreen() {
         habitData={editingHabit}
         onClose={handleCloseModal}
         onSubmit={handleSubmitHabit}
+        onDelete={handleDeleteHabit}
       />
     </SafeAreaView>
   );

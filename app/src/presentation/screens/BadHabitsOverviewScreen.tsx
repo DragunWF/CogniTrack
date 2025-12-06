@@ -26,7 +26,10 @@ import {
   DailyHabitCount,
   HabitTypeAggregate,
 } from "../../application/useCases/badHabitAnalyticsUseCases";
-import { UpdateBadHabitUseCase } from "../../application/useCases/badHabitUseCases";
+import {
+  UpdateBadHabitUseCase,
+  DeleteBadHabitUseCase,
+} from "../../application/useCases/badHabitUseCases";
 
 /**
  * BadHabitsOverviewScreen
@@ -140,7 +143,8 @@ function BadHabitsOverviewScreen() {
     if (selectedHabit === habitName || habitName === "") {
       // Deselect if clicking the same habit or clear button
       setSelectedHabit(undefined);
-    } else {
+    }
+    else {
       setSelectedHabit(habitName);
     }
   };
@@ -199,6 +203,32 @@ function BadHabitsOverviewScreen() {
   };
 
   /**
+   * Handles deleting a habit from the chronological feed
+   */
+  const handleDeleteHabit = async (habitId: number) => {
+    try {
+      const deleteBadHabit = new DeleteBadHabitUseCase();
+      await deleteBadHabit.execute(habitId);
+
+      Toast.show({
+        type: "success",
+        text1: "Habit Deleted",
+        text2: "The habit entry has been removed",
+      });
+
+      // Refresh all data on the screen
+      await fetchAllData();
+    } catch (error) {
+      console.error("Error deleting habit:", error);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Failed to delete habit",
+      });
+    }
+  };
+
+  /**
    * Clears all active filters
    */
   const handleClearFilters = () => {
@@ -250,6 +280,7 @@ function BadHabitsOverviewScreen() {
           <ChronologicalFeed
             habits={filteredHabits}
             onHabitPress={handleHabitEntryPress}
+            onDeleteHabit={handleDeleteHabit}
             selectedDate={selectedDate}
             selectedHabit={selectedHabit}
           />
@@ -266,6 +297,7 @@ function BadHabitsOverviewScreen() {
         habitData={editingHabit}
         onClose={handleCloseModal}
         onSubmit={handleUpdateHabit}
+        onDelete={handleDeleteHabit}
       />
     </SafeAreaView>
   );

@@ -1,5 +1,7 @@
 import React from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+
 import { mainColors } from "../../../shared/constants/colors";
 import { formatTime } from "../../../shared/helpers/utils";
 
@@ -15,6 +17,7 @@ import { formatTime } from "../../../shared/helpers/utils";
  * @param datetime - Unix timestamp of when the habit was logged
  * @param notes - Optional user notes about this specific occurrence
  * @param onPress - Optional callback when the item is pressed (for editing/viewing details)
+ * @param onDelete - Optional callback when the delete button is pressed
  */
 
 interface HabitLogItemProps {
@@ -26,6 +29,7 @@ interface HabitLogItemProps {
   trigger?: string;
   notes?: string;
   onPress?: () => void;
+  onDelete?: (id: number) => void;
 }
 
 function HabitLogItem({
@@ -37,8 +41,15 @@ function HabitLogItem({
   trigger,
   notes,
   onPress,
+  onDelete,
 }: HabitLogItemProps) {
   const formattedTime = formatTime(datetime);
+
+  const handleDelete = () => {
+    if (onDelete && id) {
+      onDelete(id);
+    }
+  };
 
   return (
     <TouchableOpacity
@@ -74,7 +85,15 @@ function HabitLogItem({
         )}
       </View>
 
-      <View style={styles.indicatorDot} />
+      {onDelete && (
+        <TouchableOpacity
+          onPress={handleDelete}
+          style={styles.deleteButton}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons name="trash-outline" size={22} color={mainColors.danger500} />
+        </TouchableOpacity>
+      )}
     </TouchableOpacity>
   );
 }
@@ -82,6 +101,7 @@ function HabitLogItem({
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
+    alignItems: "center",
     backgroundColor: mainColors.backgroundCard,
     borderRadius: 12,
     padding: 16,
@@ -167,13 +187,9 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     fontStyle: "italic",
   },
-  indicatorDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: mainColors.primary500,
-    marginLeft: 12,
-    marginTop: 6,
+  deleteButton: {
+    padding: 8,
+    marginLeft: 8,
   },
 });
 

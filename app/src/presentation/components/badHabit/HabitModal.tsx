@@ -8,15 +8,11 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 
 import { mainColors } from "../../../shared/constants/colors";
-import {
-  CreateBadHabitUseCase,
-  ValidatorBadHabitUseCase,
-} from "../../../application/useCases/badHabitUseCases";
 import TextInput from "../ui/TextInput";
 import Button from "../ui/Button";
 import BadHabit from "../../../domain/entities/badHabit";
@@ -46,6 +42,7 @@ import {
  * @param habitData - Pre-filled data for edit mode
  * @param onClose - Callback when modal is closed
  * @param onSubmit - Callback when form is submitted
+ * @param onDelete - Callback to handle habit deletion
  */
 
 // This determines the type of the habit modal's mode
@@ -60,6 +57,7 @@ interface HabitModalProps {
   habitData?: BadHabit;
   onClose: () => void;
   onSubmit: (data: BadHabit) => Promise<void>;
+  onDelete?: (habitId: number) => Promise<void>;
 }
 
 function HabitModal({
@@ -68,6 +66,7 @@ function HabitModal({
   habitData,
   onClose,
   onSubmit,
+  onDelete,
 }: HabitModalProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -143,6 +142,28 @@ function HabitModal({
         console.error("Modal submission error:", error);
       }
     }
+  };
+
+  const handleDelete = async () => {
+    if (!onDelete || !habitData?.id) return;
+
+    try {
+      await onDelete(habitData.id);
+      handleClose();
+    } catch (error) {
+      console.error("Modal delete error:", error);
+    }
+  };
+
+  const confirmDelete = () => {
+    Alert.alert(
+      "Delete Habit",
+      "Are you sure you want to permanently delete this habit entry?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Delete", style: "destructive", onPress: handleDelete },
+      ]
+    );
   };
 
   const handleClose = () => {
@@ -256,10 +277,16 @@ function HabitModal({
                 variant="secondary"
                 style={styles.actionButton}
               />
+              {mode === HabitModalModeEnum.EDIT && onDelete && (
+                <Button
+                  title="Delete"
+                  onPress={confirmDelete}
+                  variant="danger"
+                  style={styles.actionButton}
+                />
+              )}
               <Button
-                title={
-                  mode === HabitModalModeEnum.ADD ? "Add Habit" : "Save Changes"
-                }
+                title={mode === HabitModalModeEnum.ADD ? "Add Habit" : "Save"}
                 onPress={handleSubmit}
                 variant="primary"
                 style={styles.actionButton}

@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import { mainColors } from "../../../shared/constants/colors";
+import { mainColors, utilityColors } from "../../../shared/constants/colors";
 
 /**
  * Button Component
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     borderColor: mainColors.border,
   },
   buttonDanger: {
-    backgroundColor: mainColors.primary500, // Using primary color for consistency
+    backgroundColor: utilityColors.error700,
   },
   buttonDisabled: {
     backgroundColor: mainColors.backgroundInput,

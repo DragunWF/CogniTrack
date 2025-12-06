@@ -18,6 +18,7 @@ import BadHabit from "../../../domain/entities/badHabit";
  *
  * @param habits - Array of habits (already filtered by date/type)
  * @param onHabitPress - Callback when a habit entry is tapped
+ * @param onDeleteHabit - Callback when a habit entry is deleted
  * @param selectedDate - Currently filtered date (if any)
  * @param selectedHabit - Currently filtered habit name (if any)
  */
@@ -25,6 +26,7 @@ import BadHabit from "../../../domain/entities/badHabit";
 interface ChronologicalFeedProps {
   habits: BadHabit[];
   onHabitPress: (habitId: number | undefined) => void;
+  onDeleteHabit: (habitId: number) => void;
   selectedDate?: string;
   selectedHabit?: string;
 }
@@ -37,6 +39,7 @@ interface HabitSection {
 function ChronologicalFeed({
   habits,
   onHabitPress,
+  onDeleteHabit,
   selectedDate,
   selectedHabit,
 }: ChronologicalFeedProps) {
@@ -96,6 +99,7 @@ function ChronologicalFeed({
       datetime={item.datetime}
       notes={item.notes}
       onPress={() => onHabitPress(item.id)}
+      onDelete={onDeleteHabit}
     />
   );
 
