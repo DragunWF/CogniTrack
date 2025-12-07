@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
   SafeAreaView,
 } from "react-native";
 import { RouteProp, useRoute, useNavigation } from "@react-navigation/native";
@@ -17,6 +18,7 @@ import InsightReport from "../../domain/entities/insightReport";
 import {
   GetInsightReportByIdUseCase,
   UpdateInsightNotesUseCase,
+  DeleteInsightReportUseCase,
 } from "../../application/useCases/insightReportUseCases";
 import ErrorModal from "../components/common/ErrorModal";
 import SuccessModal from "../components/common/SuccessModal";
@@ -127,6 +129,43 @@ function InsightDetailScreen() {
     }
   };
 
+  const deleteNotes = async () => {
+    Alert.alert(
+      "Are you sure?",
+      "Are you sure you want to delete this insight report?",
+      [
+        { text: "No", style: "cancel" },
+        {
+          text: "Yes",
+          style: "destructive",
+          onPress: async () => {
+            if (!report) return;
+            console.log(`Deleting insight report for ID: ${reportId}`);
+
+            setSaving(true);
+            try {
+              const useCase = new DeleteInsightReportUseCase();
+              await useCase.execute(reportId);
+
+              // Update local report state
+              setReport({ ...report, notes: "" });
+              setNotes("");
+
+              setShowSuccessModal(true);
+              navigation.goBack();
+            } catch (error) {
+              console.error("Error deleting notes:", error);
+              setErrorMessage("Failed to delete notes. Please try again.");
+              setShowErrorModal(true);
+            } finally {
+              setSaving(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -174,7 +213,7 @@ function InsightDetailScreen() {
             textAlignVertical="top"
           />
           <TouchableOpacity
-            style={[styles.saveButton, saving && styles.saveButtonDisabled]}
+            style={[styles.saveButton, saving && styles.buttonDisabled]}
             onPress={saveNotes}
             disabled={saving}
             activeOpacity={0.7}
@@ -185,8 +224,15 @@ function InsightDetailScreen() {
                 color={mainColors.textOnPrimary}
               />
             ) : (
-              <Text style={styles.saveButtonText}>Save Notes</Text>
+              <Text style={styles.buttonText}>Save Notes</Text>
             )}
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.deleteButton]}
+            onPress={deleteNotes}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.buttonText}>Delete Report</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -282,13 +328,20 @@ const styles = StyleSheet.create({
     padding: 14,
     alignItems: "center",
   },
-  saveButtonDisabled: {
+  buttonDisabled: {
     opacity: 0.6,
   },
-  saveButtonText: {
+  buttonText: {
     fontSize: 16,
     fontWeight: "600",
     color: mainColors.textOnPrimary,
+  },
+  deleteButton: {
+    backgroundColor: utilityColors.error700,
+    borderRadius: 12,
+    padding: 14,
+    alignItems: "center",
+    marginTop: 12,
   },
 });
 
