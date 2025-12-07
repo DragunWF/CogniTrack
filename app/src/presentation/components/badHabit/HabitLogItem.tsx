@@ -1,8 +1,8 @@
 import React from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-import { mainColors } from "../../../shared/constants/colors";
+import { mainColors, utilityColors } from "../../../shared/constants/colors";
 import { formatTime } from "../../../shared/helpers/utils";
 
 /**
@@ -47,7 +47,18 @@ function HabitLogItem({
 
   const handleDelete = () => {
     if (onDelete && id) {
-      onDelete(id);
+      Alert.alert(
+        "Are you sure?",
+        "Are you sure you want to delete this habit entry?",
+        [
+          { text: "No", style: "cancel" },
+          {
+            text: "Yes",
+            style: "destructive",
+            onPress: () => onDelete(id),
+          },
+        ]
+      );
     }
   };
 
@@ -91,7 +102,11 @@ function HabitLogItem({
           style={styles.deleteButton}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Ionicons name="trash-outline" size={22} color={mainColors.danger500} />
+          <Ionicons
+            name="trash-outline"
+            size={22}
+            color={utilityColors.error500}
+          />
         </TouchableOpacity>
       )}
     </TouchableOpacity>
