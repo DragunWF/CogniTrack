@@ -8,7 +8,10 @@ import {
 import { InsightStackParamList } from "../navigation/InsightNavigator";
 import { INSIGHT_NAVIGATION_ROUTES } from "../../shared/constants/navigation";
 import { GetInsightReportByIdUseCase } from "../../application/useCases/insightReportUseCases";
-import { reflectionChatbotPrompt } from "../../infrastructure/ai/prompts";
+import {
+  reflectionChatbotPrompt,
+  reflectionChatbotPromptPlaceholders,
+} from "../../infrastructure/ai/prompts";
 import { GeminiService } from "../../infrastructure/services/geminiService";
 import InsightReport from "../../domain/entities/insightReport";
 import { MessageHistory } from "../../application/services/geminiServiceInterfaces";
@@ -72,7 +75,7 @@ function ReflectionChatScreen({ route }: ReflectionChatScreenProps) {
         });
 
         const initialPrompt = reflectionChatbotPrompt.replace(
-          "{insightReport}",
+          reflectionChatbotPromptPlaceholders.insightReport,
           reportJson
         );
         setSystemPrompt(initialPrompt);
