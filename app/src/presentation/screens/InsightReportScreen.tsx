@@ -18,6 +18,7 @@ import {
 } from "../../application/useCases/insightReportUseCases";
 import { GenerateInsightUseCase } from "../../application/useCases/generateInsightUseCase";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { NAVIGATOR_NAMES, INSIGHT_NAVIGATION_ROUTES } from "../../shared/constants/navigation";
 import DatePickerModal from "../components/common/DatePickerModal";
 import ErrorModal from "../components/common/ErrorModal";
 
@@ -42,10 +43,13 @@ import ErrorModal from "../components/common/ErrorModal";
 type FilterRange = "This Month" | "This Year" | "All Time";
 
 type RootStackParamList = {
-  InsightDetail: { reportId: number };
+  [NAVIGATOR_NAMES.INSIGHT_NAVIGATOR]: {
+    screen: typeof INSIGHT_NAVIGATION_ROUTES.INSIGHT_DETAIL;
+    params: { reportId: number };
+  };
 };
 
-type NavigationProp = StackNavigationProp<RootStackParamList, "InsightDetail">;
+type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 function InsightReportScreen() {
   const navigation = useNavigation<NavigationProp>();
@@ -134,7 +138,10 @@ function InsightReportScreen() {
       setIsGenerating(false);
 
       // Navigate to detail screen
-      navigation.navigate("InsightDetail", { reportId: newReportId });
+      navigation.navigate(NAVIGATOR_NAMES.INSIGHT_NAVIGATOR as any, {
+        screen: INSIGHT_NAVIGATION_ROUTES.INSIGHT_DETAIL,
+        params: { reportId: newReportId },
+      });
     } catch (error) {
       setIsGenerating(false);
       console.error("Error generating insight report:", error);
@@ -149,7 +156,10 @@ function InsightReportScreen() {
    * Navigate to detail screen on card tap
    */
   const handleReportPress = (reportId: number) => {
-    navigation.navigate("InsightDetail", { reportId });
+    navigation.navigate(NAVIGATOR_NAMES.INSIGHT_NAVIGATOR as any, {
+      screen: INSIGHT_NAVIGATION_ROUTES.INSIGHT_DETAIL,
+      params: { reportId },
+    });
   };
 
   /**

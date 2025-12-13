@@ -13,4 +13,5 @@ export const APP_NAVIGATION_ROUTES = {
 
 export const INSIGHT_NAVIGATION_ROUTES = {
   INSIGHT_DETAIL: "InsightDetail",
+  REFLECTION_CHATBOT: "ReflectionChatbot",
 };

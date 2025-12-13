@@ -2,8 +2,17 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import { INSIGHT_NAVIGATION_ROUTES } from "../../shared/constants/navigation";
 import InsightDetailScreen from "../screens/InsightDetailScreen";
+import ReflectionChatScreen from "../screens/ReflectionChatScreen";
 
-const Stack = createStackNavigator();
+/**
+ * Type definitions for the Insight stack navigator
+ */
+export type InsightStackParamList = {
+  [INSIGHT_NAVIGATION_ROUTES.INSIGHT_DETAIL]: { reportId: number };
+  [INSIGHT_NAVIGATION_ROUTES.REFLECTION_CHATBOT]: { reportId: number };
+};
+
+const Stack = createStackNavigator<InsightStackParamList>();
 
 /**
  * InsightNavigator
@@ -22,9 +31,18 @@ function InsightNavigator() {
         name={INSIGHT_NAVIGATION_ROUTES.INSIGHT_DETAIL}
         component={InsightDetailScreen}
         options={{
-          headerShown: true,
-          title: "Insight Report", // This is the current screen's title
-          headerBackTitle: "Insights", // 👈 This explicitly sets the back button text
+          headerShown: false,
+          title: "Insight Report",
+          headerBackTitle: "Insights",
+        }}
+      />
+      <Stack.Screen
+        name={INSIGHT_NAVIGATION_ROUTES.REFLECTION_CHATBOT}
+        component={ReflectionChatScreen}
+        options={{
+          headerShown: false,
+          title: "Reflection Chatbot",
+          headerBackTitle: "Back",
         }}
       />
     </Stack.Navigator>

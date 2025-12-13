@@ -10,7 +10,7 @@ import {
   Alert,
   SafeAreaView,
 } from "react-native";
-import { RouteProp, useRoute, useNavigation } from "@react-navigation/native";
+import { StackScreenProps } from "@react-navigation/stack";
 import Markdown from "react-native-markdown-display";
 import { mainColors, utilityColors } from "../../shared/constants/colors";
 import { formatDate } from "../../shared/helpers/utils";
@@ -22,6 +22,8 @@ import {
 } from "../../application/useCases/insightReportUseCases";
 import ErrorModal from "../components/common/ErrorModal";
 import SuccessModal from "../components/common/SuccessModal";
+import { InsightStackParamList } from "../navigation/InsightNavigator";
+import { INSIGHT_NAVIGATION_ROUTES } from "../../shared/constants/navigation";
 
 /**
  * InsightDetailScreen - Detailed view of a single AI-generated insight report
@@ -40,15 +42,12 @@ import SuccessModal from "../components/common/SuccessModal";
  * Architecture Layer: Presentation (Screen Component)
  */
 
-type RootStackParamList = {
-  InsightDetail: { reportId: number };
-};
+type InsightDetailScreenProps = StackScreenProps<
+  InsightStackParamList,
+  typeof INSIGHT_NAVIGATION_ROUTES.INSIGHT_DETAIL
+>;
 
-type InsightDetailRouteProp = RouteProp<RootStackParamList, "InsightDetail">;
-
-function InsightDetailScreen() {
-  const route = useRoute<InsightDetailRouteProp>();
-  const navigation = useNavigation();
+function InsightDetailScreen({ route, navigation }: InsightDetailScreenProps) {
   const { reportId } = route.params;
 
   const [report, setReport] = useState<InsightReport | null>(null);
@@ -91,7 +90,7 @@ function InsightDetailScreen() {
       console.log("✅ Report loaded successfully:", {
         title: fetchedReport.title,
         contentLength: fetchedReport.content?.length || 0,
-        hasNotes: !!fetchedReport.notes,
+        hasNotes: Boolean(fetchedReport.notes),
       });
 
       setReport(fetchedReport);
@@ -127,6 +126,12 @@ function InsightDetailScreen() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const startReflectionWithChatbot = async () => {
+    navigation.navigate(INSIGHT_NAVIGATION_ROUTES.REFLECTION_CHATBOT, {
+      reportId,
+    });
   };
 
   const deleteNotes = async () => {
@@ -228,6 +233,13 @@ function InsightDetailScreen() {
             )}
           </TouchableOpacity>
           <TouchableOpacity
+            style={[styles.reflectionButton]}
+            onPress={startReflectionWithChatbot}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.buttonText}>Start Reflection</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
             style={[styles.deleteButton]}
             onPress={deleteNotes}
             activeOpacity={0.7}
@@ -321,6 +333,13 @@ const styles = StyleSheet.create({
     borderColor: mainColors.border,
     minHeight: 120,
     marginBottom: 12,
+  },
+  reflectionButton: {
+    backgroundColor: mainColors.accent700,
+    borderRadius: 12,
+    padding: 14,
+    alignItems: "center",
+    marginTop: 12,
   },
   saveButton: {
     backgroundColor: mainColors.primary500,

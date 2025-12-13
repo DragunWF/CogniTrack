@@ -2,7 +2,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { mainColors } from "../../shared/constants/colors";
 import AppNavigator from "./AppNavigator";
-import InsightDetailScreen from "../screens/InsightDetailScreen";
+import InsightNavigator from "./InsightNavigator";
+import { NAVIGATOR_NAMES } from "../../shared/constants/navigation";
 
 /**
  * Root Stack Navigator for the app
@@ -33,7 +34,7 @@ function NavigationWrapper() {
       >
         {/* Main App with Bottom Tabs */}
         <Stack.Screen
-          name="MainApp"
+          name={NAVIGATOR_NAMES.APP_NAVIGATOR as string}
           component={AppNavigator}
           options={{
             headerShown: false,
@@ -43,8 +44,8 @@ function NavigationWrapper() {
 
         {/* Insight Detail Screen */}
         <Stack.Screen
-          name="InsightDetail"
-          component={InsightDetailScreen}
+          name={NAVIGATOR_NAMES.INSIGHT_NAVIGATOR as string}
+          component={InsightNavigator}
           options={{
             title: "Insight Report",
             headerShown: true,
