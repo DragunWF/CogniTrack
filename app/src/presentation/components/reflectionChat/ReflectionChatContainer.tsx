@@ -7,6 +7,7 @@ import {
   Platform,
   Text,
 } from "react-native";
+import { useState, useEffect } from "react";
 import { mainColors } from "../../../shared/constants/colors";
 import ChatHeader from "./ChatHeader";
 import ChatBubble from "./ChatBubble";
@@ -31,6 +32,7 @@ export interface ChatMessage {
  * - Message history displayed in chronological order
  * - Automatic scroll to latest message
  * - Typing indicator when AI is responding
+ * - Typewriter effect for AI messages
  * - Theme-consistent styling throughout
  *
  * Props:
@@ -61,6 +63,22 @@ function ReflectionChatContainer({
   isLoading = false,
   reportTitle,
 }: ReflectionChatContainerProps) {
+  // Track which message is currently being animated
+  const [animatingMessageId, setAnimatingMessageId] = useState<string | null>(
+    null
+  );
+
+  // When new AI message arrives, start animating it
+  useEffect(() => {
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      // Only animate AI messages
+      if (lastMessage.sender === "ai" && !isLoading) {
+        setAnimatingMessageId(lastMessage.id);
+      }
+    }
+  }, [messages, isLoading]);
+
   /**
    * Render individual message item
    */
@@ -69,6 +87,7 @@ function ReflectionChatContainer({
       message={item.content}
       sender={item.sender}
       timestamp={item.timestamp}
+      isAnimating={animatingMessageId === item.id}
     />
   );
 

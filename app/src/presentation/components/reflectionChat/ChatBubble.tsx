@@ -1,5 +1,6 @@
 import { StyleSheet, View, Text } from "react-native";
 import { mainColors } from "../../../shared/constants/colors";
+import { useTypewriter } from "../../hooks/useTypewriter";
 
 /**
  * ChatBubble - Individual message bubble component for the reflection chatbot
@@ -8,10 +9,13 @@ import { mainColors } from "../../../shared/constants/colors";
  * User messages appear on the right with primary color, AI messages appear on the left
  * with a neutral card background.
  *
+ * AI messages include a typewriter effect for a more engaging experience.
+ *
  * Props:
  * - message: The text content of the message
  * - sender: "user" | "ai" - Determines styling and alignment
  * - timestamp: Optional ISO timestamp string for message creation
+ * - isAnimating: Whether the message is currently being animated (default: false)
  *
  * Architecture: Presentation (Dumb Component)
  */
@@ -20,10 +24,23 @@ interface ChatBubbleProps {
   message: string;
   sender: "user" | "ai";
   timestamp?: string;
+  isAnimating?: boolean;
 }
 
-function ChatBubble({ message, sender, timestamp }: ChatBubbleProps) {
+function ChatBubble({
+  message,
+  sender,
+  timestamp,
+  isAnimating = false,
+}: ChatBubbleProps) {
   const isUserMessage = sender === "user";
+
+  // Apply typewriter effect only to AI messages that are currently animating
+  const displayedText = useTypewriter(
+    message,
+    30, // Speed: 30ms per character
+    !isUserMessage && isAnimating // Enable for AI messages only when animating
+  );
 
   /**
    * Format timestamp to readable time format
@@ -58,7 +75,7 @@ function ChatBubble({ message, sender, timestamp }: ChatBubbleProps) {
             isUserMessage ? styles.userText : styles.aiText,
           ]}
         >
-          {message}
+          {displayedText}
         </Text>
       </View>
       {timestamp && (

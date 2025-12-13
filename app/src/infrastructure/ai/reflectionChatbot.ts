@@ -1,4 +1,3 @@
-import { GeminiService } from "../services/geminiService";
 import {
   reflectionChatbotPrompt,
   reflectionChatbotPromptPlaceholders,
@@ -25,5 +24,3 @@ export async function formatInitialBehaviorPrompt(insightReportId: number) {
     );
   });
 }
-
-export async function generateResponse(userMessage: string) {}
