@@ -16,6 +16,7 @@ The goal is not to be a comprehensive life-planner, but to be a frictionless, sp
 - **Today's Log:** A chronological list of every specific habit entry logged for the current day.
 - **AI-Powered Insights:** (Powered by the Gemini API) The `CognitiveInsight` feature analyzes your habit data—looking at time, location, and notes—to find hidden patterns and provide you with actionable reflections.
   - **Saved Reports:** View and manage previously generated AI insight reports with full CRUD capabilities.
+  - **Reflection Chatbot:** Talk to our AI chatbot for a reflection specialized towards the insights of your current habits.
   - **Editable Notes:** Add personal notes and reflections to your AI-generated insights.
 - **Data Visualization (Stats Screen):**
   - **Pie Charts:** To identify which bad habits occur most frequently.
