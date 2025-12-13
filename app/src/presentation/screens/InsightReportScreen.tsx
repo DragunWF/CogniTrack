@@ -18,7 +18,10 @@ import {
 } from "../../application/useCases/insightReportUseCases";
 import { GenerateInsightUseCase } from "../../application/useCases/generateInsightUseCase";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { NAVIGATOR_NAMES, INSIGHT_NAVIGATION_ROUTES } from "../../shared/constants/navigation";
+import {
+  NAVIGATOR_NAMES,
+  INSIGHT_NAVIGATION_ROUTES,
+} from "../../shared/constants/navigation";
 import DatePickerModal from "../components/common/DatePickerModal";
 import ErrorModal from "../components/common/ErrorModal";
 
