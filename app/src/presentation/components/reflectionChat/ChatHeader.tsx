@@ -24,7 +24,7 @@ interface ChatHeaderProps {
 }
 
 function ChatHeader({
-  title = "Reflection Chatbot",
+  title = "Cogni Reflection Bot",
   subtitle,
   description = "Chat with an AI assistant to reflect deeply on your insights and habits",
 }: ChatHeaderProps) {
