@@ -1,6 +1,6 @@
 // UPDATE THIS WHEN THERE IS A NEW EXPO DEVELOPMENT BUILD AVAILABLE
 const EXPO_APP_URL =
-  "https://expo.dev/preview/update?message=fix%28landingPage%29%3A+for+gecko-based+browsers%2C+override+the+text+color+when+highlighting+gradient+text+to+white&updateRuntimeVersion=1.0.0&createdAt=2025-12-06T05%3A56%3A04.028Z&slug=exp&projectId=9203ba2d-9630-4ea0-88b5-9d813e63dee5&group=b01c0670-e96c-43e2-bc02-48207a1f4c2e";
+  "https://expo.dev/preview/update?message=refactor%28app%29%3A+remove+harcoded+placeholder+value&updateRuntimeVersion=1.0.0&createdAt=2026-01-31T02%3A44%3A33.910Z&slug=exp&projectId=9203ba2d-9630-4ea0-88b5-9d813e63dee5&group=2aacfdce-9652-4209-a40b-eb4ce84ffd51";
 
 // TypeScript interfaces for landing page data
 export interface CTAButton {
