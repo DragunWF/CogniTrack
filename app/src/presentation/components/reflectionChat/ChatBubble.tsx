@@ -87,7 +87,9 @@ function ChatBubble({
             {displayedText}
           </Text>
         ) : (
-          <Markdown style={markdownStyles}>{message}</Markdown>
+          <Markdown style={markdownStyles} rules={markdownRules}>
+            {message}
+          </Markdown>
         )}
       </View>
       {timestamp && (
@@ -198,7 +200,8 @@ const baseMarkdownStyles = {
   },
   paragraph: {
     marginTop: 0,
-    marginBottom: 0,
+    marginBottom: 12,
+    lineHeight: 24,
   },
 };
 
@@ -242,6 +245,12 @@ const aiMarkdownStyles = {
   heading2: { ...baseMarkdownStyles.heading2, color: mainColors.textPrimary },
   heading3: { ...baseMarkdownStyles.heading3, color: mainColors.textPrimary },
   strong: { ...baseMarkdownStyles.strong, color: mainColors.textPrimary },
+};
+
+const markdownRules = {
+  softbreak: (node: any, children: any, parent: any, styles: any) => (
+    <Text key={node.key}>{"\n"}</Text>
+  ),
 };
 
 export default ChatBubble;
