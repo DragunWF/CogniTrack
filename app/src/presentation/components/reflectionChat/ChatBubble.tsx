@@ -38,9 +38,9 @@ function ChatBubble({
   // Apply typewriter effect only to AI messages that are currently animating
   const displayedText = useTypewriter(
     message,
-    30, // Speed: 30ms per character
-    !isUserMessage && isAnimating // Enable for AI messages only when animating
-  );
+    12, // Delay: 30ms per character (lower delay = faster typing speed)
+    !isUserMessage && isAnimating, // Enable for AI messages only when animating
+  ).trim();
 
   /**
    * Format timestamp to readable time format

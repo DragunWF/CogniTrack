@@ -3,23 +3,23 @@ import { useState, useEffect } from "react";
 /**
  * useTypewriter - Custom hook for typewriter text animation effect
  *
- * Animates text character by character with a configurable speed.
+ * Animates text character by character with a configurable delay.
  * Useful for creating engaging UI effects when displaying AI responses.
  *
  * @param text - The full text to animate
- * @param speed - Delay between each character in milliseconds (default: 30ms)
+ * @param delayMs - Delay between each character in milliseconds (default: 30ms)
  * @param enabled - Whether the animation is enabled (default: true)
  *
  * @returns The animated text (partial or full based on animation progress)
  *
  * Example:
- * const animatedText = useTypewriter("Hello World", 50);
+ * const animatedText = useTypewriter("Hello World", 30);
  * // Gradually reveals: "H", "He", "Hel", ..., "Hello World"
  */
 export function useTypewriter(
   text: string,
-  speed: number = 30,
-  enabled: boolean = true
+  delayMs: number = 30,
+  enabled: boolean = true,
 ): string {
   const [displayedText, setDisplayedText] = useState<string>("");
 
@@ -36,7 +36,7 @@ export function useTypewriter(
       if (currentIndex < text.length) {
         setDisplayedText(text.slice(0, currentIndex + 1));
         currentIndex++;
-        animationTimeout = setTimeout(animateText, speed);
+        animationTimeout = setTimeout(animateText, delayMs);
       } else {
         setDisplayedText(text);
       }
@@ -51,7 +51,7 @@ export function useTypewriter(
         clearTimeout(animationTimeout);
       }
     };
-  }, [text, speed, enabled]);
+  }, [text, delayMs, enabled]);
 
   return displayedText;
 }
