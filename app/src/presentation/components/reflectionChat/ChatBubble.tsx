@@ -1,4 +1,5 @@
 import { StyleSheet, View, Text } from "react-native";
+import Markdown from "react-native-markdown-display";
 import { mainColors } from "../../../shared/constants/colors";
 import { useTypewriter } from "../../hooks/useTypewriter";
 
@@ -42,6 +43,13 @@ function ChatBubble({
     !isUserMessage && isAnimating, // Enable for AI messages only when animating
   ).trim();
 
+  const isTypewriterActive =
+    !isUserMessage &&
+    isAnimating &&
+    displayedText.length < message.trim().length;
+
+  const markdownStyles = isUserMessage ? userMarkdownStyles : aiMarkdownStyles;
+
   /**
    * Format timestamp to readable time format
    * e.g., "2:45 PM" or "14:45"
@@ -69,14 +77,18 @@ function ChatBubble({
           isUserMessage ? styles.userBubble : styles.aiBubble,
         ]}
       >
-        <Text
-          style={[
-            styles.messageText,
-            isUserMessage ? styles.userText : styles.aiText,
-          ]}
-        >
-          {displayedText}
-        </Text>
+        {isTypewriterActive ? (
+          <Text
+            style={[
+              styles.messageText,
+              isUserMessage ? styles.userText : styles.aiText,
+            ]}
+          >
+            {displayedText}
+          </Text>
+        ) : (
+          <Markdown style={markdownStyles}>{message}</Markdown>
+        )}
       </View>
       {timestamp && (
         <Text
@@ -140,5 +152,96 @@ const styles = StyleSheet.create({
     color: mainColors.textMuted,
   },
 });
+
+const baseMarkdownStyles = {
+  body: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  code_inline: {
+    backgroundColor: mainColors.backgroundCard,
+    fontFamily: "monospace",
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  code_block: {
+    backgroundColor: mainColors.backgroundCard,
+    fontFamily: "monospace",
+    padding: 12,
+    borderRadius: 8,
+    marginVertical: 8,
+  },
+  heading1: {
+    fontSize: 20,
+    fontWeight: "bold" as const,
+    marginVertical: 8,
+  },
+  heading2: {
+    fontSize: 18,
+    fontWeight: "bold" as const,
+    marginVertical: 6,
+  },
+  heading3: {
+    fontSize: 16,
+    fontWeight: "bold" as const,
+    marginVertical: 4,
+  },
+  strong: {
+    fontWeight: "bold" as const,
+  },
+  bullet_list: {
+    marginVertical: 4,
+  },
+  list_item: {
+    marginVertical: 2,
+  },
+  paragraph: {
+    marginTop: 0,
+    marginBottom: 0,
+  },
+};
+
+const userMarkdownStyles = {
+  ...baseMarkdownStyles,
+  body: {
+    ...baseMarkdownStyles.body,
+    color: mainColors.textOnPrimary,
+  },
+  code_inline: {
+    ...baseMarkdownStyles.code_inline,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    color: mainColors.textOnPrimary,
+  },
+  code_block: {
+    ...baseMarkdownStyles.code_block,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    color: mainColors.textOnPrimary,
+  },
+  heading1: { ...baseMarkdownStyles.heading1, color: mainColors.textOnPrimary },
+  heading2: { ...baseMarkdownStyles.heading2, color: mainColors.textOnPrimary },
+  heading3: { ...baseMarkdownStyles.heading3, color: mainColors.textOnPrimary },
+  strong: { ...baseMarkdownStyles.strong, color: mainColors.textOnPrimary },
+};
+
+const aiMarkdownStyles = {
+  ...baseMarkdownStyles,
+  body: {
+    ...baseMarkdownStyles.body,
+    color: mainColors.textPrimary,
+  },
+  code_inline: {
+    ...baseMarkdownStyles.code_inline,
+    color: mainColors.textPrimary,
+  },
+  code_block: {
+    ...baseMarkdownStyles.code_block,
+    color: mainColors.textPrimary,
+  },
+  heading1: { ...baseMarkdownStyles.heading1, color: mainColors.textPrimary },
+  heading2: { ...baseMarkdownStyles.heading2, color: mainColors.textPrimary },
+  heading3: { ...baseMarkdownStyles.heading3, color: mainColors.textPrimary },
+  strong: { ...baseMarkdownStyles.strong, color: mainColors.textPrimary },
+};
 
 export default ChatBubble;
